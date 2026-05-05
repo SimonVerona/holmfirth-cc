@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events — Holmfirth Cycling Club</title>
+  <meta name="description" content="Upcoming events organised by Holmfirth Cycling Club — club rides, time trials, sportives and social events.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    [data-reveal].revealed { opacity: 1; transform: none; }
+    [data-reveal-delay="1"] { transition-delay: 0.15s; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-mark">HCC</div>
+    <span class="nav-logo-text">Holmfirth CC</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="rides.html">Rides</a></li>
+    <li><a href="events.html" class="active">Events</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="join.html" class="nav-join">Join the club</a></li>
+  </ul>
+  <button class="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-pattern"></div>
+  <div class="page-hero-content">
+    <div class="section-label">What's on</div>
+    <h1>Events<br>&amp; rides</h1>
+    <p>Club events, time trials, sportives and social occasions. Routes for all club rides are posted on Ride With GPS.</p>
+  </div>
+</div>
+
+<div style="padding: 80px 32px; background: var(--white);">
+  <div style="max-width: var(--max-w); margin: 0 auto;">
+
+    <!-- RWGPS reminder -->
+    <div style="background: var(--light); border-left: 3px solid var(--red); padding: 16px 20px; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 48px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;" data-reveal>
+      <div style="flex: 1;">
+        <strong style="font-size: 14px; font-weight: 600;">Routes are on Ride With GPS.</strong>
+        <span style="font-size: 14px; color: var(--gray); font-weight: 300;"> All club ride routes are posted each week — check before you head out.</span>
+      </div>
+      <a href="https://ridewithgps.com" target="_blank" rel="noopener" class="btn btn-red" style="white-space: nowrap;">Open Ride With GPS →</a>
+    </div>
+
+    <!-- 2025 events -->
+    <div data-reveal>
+      <div class="section-label">2025</div>
+      <h2 class="section-title">Upcoming events</h2>
+    </div>
+
+    <div class="events-list" data-reveal data-reveal-delay="1">
+      <div class="event-row">
+        <div class="event-date-box">
+          <div class="event-date-day">18</div>
+          <div class="event-date-month">May</div>
+        </div>
+        <div>
+          <div class="event-name">Spring club run &amp; café stop</div>
+          <div class="event-meta">All groups · Holmfirth market square · Route on Ride With GPS</div>
+        </div>
+        <span class="event-tag ride">Club ride</span>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-box">
+          <div class="event-date-day">01</div>
+          <div class="event-date-month">Jun</div>
+        </div>
+        <div>
+          <div class="event-name">CTT 10-mile time trial</div>
+          <div class="event-meta">Open event organised by HCC · Pre-entry via CTT website · Details to follow</div>
+        </div>
+        <span class="event-tag race">Race</span>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-box">
+          <div class="event-date-day">14</div>
+          <div class="event-date-month">Jun</div>
+        </div>
+        <div>
+          <div class="event-name">Group D gravel ride</div>
+          <div class="event-meta">Longer off-road option for Group D riders · Route on Ride With GPS</div>
+        </div>
+        <span class="event-tag ride">Club ride</span>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-box">
+          <div class="event-date-day">TBC</div>
+          <div class="event-date-month">Jul</div>
+        </div>
+        <div>
+          <div class="event-name">White Rose Youth League round</div>
+          <div class="event-meta">Junior racing · BC Race Silver or above required · Details to follow</div>
+        </div>
+        <span class="event-tag race">Junior race</span>
+      </div>
+
+      <div class="event-row">
+        <div class="event-date-box">
+          <div class="event-date-day">Dec</div>
+          <div class="event-date-month">2025</div>
+        </div>
+        <div>
+          <div class="event-name">Christmas ride &amp; pie &amp; peas</div>
+          <div class="event-meta">Annual festive club ride followed by social — date to be confirmed</div>
+        </div>
+        <span class="event-tag social">Social</span>
+      </div>
+    </div>
+
+    <!-- Organise / suggest -->
+    <div style="margin-top: 64px; background: var(--light); border-radius: var(--radius); padding: 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;" data-reveal>
+      <div>
+        <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Got an event idea?</h3>
+        <p style="font-size: 14px; font-weight: 300; color: var(--gray);">Members can suggest rides, sportives, social events or racing opportunities. Get in touch with the committee.</p>
+      </div>
+      <a href="contact.html" class="btn btn-outline-dark">Contact the committee →</a>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">Holmfirth CC</div>
+        <p class="footer-tagline">Promoting the amateur sport of cycling in the Holme Valley since 2013.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/holmfirthcyclingclub" target="_blank" aria-label="Instagram">IG</a>
+          <a href="https://www.facebook.com/Holmfirth-Cycling-Club-239784446186782/" target="_blank" aria-label="Facebook">FB</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Riding</div>
+        <ul class="footer-links">
+          <li><a href="rides.html">Ride groups</a></li>
+          <li><a href="https://ridewithgps.com" target="_blank">Ride With GPS</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Club</div>
+        <ul class="footer-links">
+          <li><a href="join.html">Join or renew</a></li>
+          <li><a href="about.html#committee">Committee</a></li>
+          <li><a href="contact.html">Contact us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Events</div>
+        <ul class="footer-links">
+          <li><a href="events.html">Upcoming events</a></li>
+          <li><a href="about.html#coaching">Coaching</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Holmfirth Cycling Club.</span>
+      <div class="footer-affil">
+        <span>British Cycling</span><span>Cycling UK</span><span>CTT</span><span>YCF</span><span>Clubmark</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

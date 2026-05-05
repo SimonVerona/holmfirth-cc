@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Holmfirth Cycling Club</title>
+  <meta name="description" content="About Holmfirth Cycling Club — committee, coaching, club kit, constitution and safeguarding.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    [data-reveal].revealed { opacity: 1; transform: none; }
+    [data-reveal-delay="1"] { transition-delay: 0.15s; }
+    .committee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 40px; }
+    .committee-card { background: var(--light); border-radius: var(--radius); padding: 20px; }
+    .committee-initials { width: 44px; height: 44px; border-radius: 50%; background: var(--red); color: white; font-family: var(--font-display); font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+    .committee-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .committee-role { font-size: 12px; color: var(--gray); font-weight: 300; line-height: 1.4; }
+    .downloads-list { display: flex; flex-direction: column; gap: 8px; margin-top: 32px; }
+    .download-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; background: var(--light); border-radius: var(--radius); }
+    .download-name { font-size: 14px; font-weight: 500; }
+    .download-date { font-size: 12px; color: var(--gray); font-weight: 300; margin-top: 2px; }
+    .download-btn { font-size: 12px; font-weight: 600; color: var(--red); white-space: nowrap; text-decoration: none; }
+    .download-btn:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-mark">HCC</div>
+    <span class="nav-logo-text">Holmfirth CC</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="rides.html">Rides</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="join.html" class="nav-join">Join the club</a></li>
+  </ul>
+  <button class="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-pattern"></div>
+  <div class="page-hero-content">
+    <div class="section-label">Est. 2013</div>
+    <h1>About<br>the club</h1>
+    <p>Holmfirth CC was formed in November 2013. We're affiliated to British Cycling, Cycling UK, CTT and the Yorkshire Cycling Federation, and are a Go Ride and Clubmark accredited club.</p>
+  </div>
+</div>
+
+<div style="padding: 80px 32px; background: var(--white);">
+  <div style="max-width: var(--max-w); margin: 0 auto;">
+
+    <!-- Committee -->
+    <div id="committee" data-reveal>
+      <div class="section-label">Who we are</div>
+      <h2 class="section-title">The committee</h2>
+      <p class="section-body">HCC is run by volunteers. If you're interested in any of the vacant posts, please get in touch.</p>
+    </div>
+    <div class="committee-grid" data-reveal data-reveal-delay="1">
+      <div class="committee-card">
+        <div class="committee-initials">TC</div>
+        <div class="committee-name">Tracey Coldwell</div>
+        <div class="committee-role">Chairperson, Club Coach, Volunteer Co-ordinator</div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-initials">AH</div>
+        <div class="committee-name">Alison Hughes</div>
+        <div class="committee-role">Secretary, Welfare Officer</div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-initials">DA</div>
+        <div class="committee-name">David Amies</div>
+        <div class="committee-role">Treasurer</div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-initials">CM</div>
+        <div class="committee-name">Carol Macklin</div>
+        <div class="committee-role">Membership Secretary</div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-initials">RN</div>
+        <div class="committee-name">Richard Needham</div>
+        <div class="committee-role">Club Runs Co-ordinator</div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-initials">PR</div>
+        <div class="committee-name">Peter Root</div>
+        <div class="committee-role">Club Coach</div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-initials">EM</div>
+        <div class="committee-name">Emily Murphy</div>
+        <div class="committee-role">Welfare Officer</div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-initials">AB</div>
+        <div class="committee-name">Alex Beaumont</div>
+        <div class="committee-role">Social Media Officer</div>
+      </div>
+      <div class="committee-card">
+        <div class="committee-initials">AG</div>
+        <div class="committee-name">Adrian Gamble</div>
+        <div class="committee-role">Social Media Officer</div>
+      </div>
+      <div class="committee-card" style="border: 1.5px dashed rgba(0,0,0,0.15);">
+        <div class="committee-initials" style="background: var(--offwhite); color: var(--gray);">?</div>
+        <div class="committee-name" style="color: var(--gray);">Vacant</div>
+        <div class="committee-role">Young Persons Representative — interested? <a href="contact.html" style="color: var(--red);">Get in touch</a></div>
+      </div>
+    </div>
+
+    <!-- Coaching -->
+    <div style="margin-top: 80px;" id="coaching" data-reveal>
+      <div class="section-label">Development</div>
+      <h2 class="section-title">Coaching</h2>
+      <p class="section-body">HCC is a Go Ride club and offers coaching for younger riders and those looking to develop their skills. Get in touch with our Club Coach to find out what's available.</p>
+      <div style="margin-top: 24px;">
+        <a href="contact.html?to=coaching" class="btn btn-outline-dark">Contact the Club Coach →</a>
+      </div>
+    </div>
+
+    <!-- Club kit -->
+    <div style="margin-top: 80px;" id="kit" data-reveal>
+      <div class="section-label">Look the part</div>
+      <h2 class="section-title">Club kit</h2>
+      <p class="section-body">Our club kit is based on the Holmfirth colours of black, red and white and incorporates the Yorkshire Rose. We encourage all members to wear the kit with pride.</p>
+      <div style="margin-top: 24px; background: var(--light); border-radius: var(--radius); padding: 28px; display: flex; flex-direction: column; gap: 10px; max-width: 520px;">
+        <p style="font-size: 14px; font-weight: 300; color: var(--gray);">Ladies, gents and kids short-sleeve jerseys are stocked at <a href="http://www.albion-cycling.co.uk/" target="_blank" style="color: var(--red);">Albion Cycles</a> in Holmfirth.</p>
+        <p style="font-size: 14px; font-weight: 300; color: var(--gray);">A club shop opens periodically via <a href="https://stimulussport.co.uk/club-shops/" target="_blank" style="color: var(--red);">Stimulus Sport</a> — watch out for emails when it's open for orders.</p>
+      </div>
+    </div>
+
+    <!-- Safeguarding -->
+    <div style="margin-top: 80px;" id="safeguarding" data-reveal>
+      <div class="section-label">Safe sport</div>
+      <h2 class="section-title">Safeguarding</h2>
+      <p class="section-body">The welfare and safety of all our members, especially young riders and vulnerable adults, is our highest priority. HCC is fully committed to British Cycling's safeguarding policies.</p>
+      <div style="margin-top: 24px; background: var(--light); border-left: 3px solid var(--red); padding: 20px 24px; border-radius: 0 var(--radius) var(--radius) 0; max-width: 560px;">
+        <p style="font-size: 14px; font-weight: 300; color: var(--gray); line-height: 1.7;">Our Welfare Officers are Alison Hughes and Emily Murphy. Any safeguarding concerns should be reported to them directly, or to British Cycling if you prefer. All club coaches hold current DBS checks and relevant qualifications.</p>
+        <a href="contact.html?to=welfare" style="display: inline-block; margin-top: 12px; font-size: 13px; font-weight: 600; color: var(--red);">Contact the Welfare Officer →</a>
+      </div>
+    </div>
+
+    <!-- Constitution & Downloads -->
+    <div style="margin-top: 80px;" id="constitution" data-reveal>
+      <div class="section-label">Governance</div>
+      <h2 class="section-title">Documents</h2>
+      <p class="section-body">Club constitution, AGM minutes and accounts are available to download below.</p>
+      <div class="downloads-list" data-reveal data-reveal-delay="1">
+        <div class="download-row">
+          <div>
+            <div class="download-name">HCC Constitution</div>
+            <div class="download-date">2023</div>
+          </div>
+          <a href="https://holmfirthcc.com/wp-content/uploads/2023/05/HCC-Constitution-2023.pdf" target="_blank" class="download-btn">Download PDF →</a>
+        </div>
+        <div class="download-row">
+          <div>
+            <div class="download-name">AGM Minutes</div>
+            <div class="download-date">February 2026</div>
+          </div>
+          <a href="https://holmfirthcc.com/wp-content/uploads/2026/03/HCC-AGM-Minutes-February-2026.pdf" target="_blank" class="download-btn">Download PDF →</a>
+        </div>
+        <div class="download-row">
+          <div>
+            <div class="download-name">AGM Agenda</div>
+            <div class="download-date">February 2026</div>
+          </div>
+          <a href="https://holmfirthcc.com/wp-content/uploads/2026/02/HCC-AGM-Agenda-February-2026.pdf" target="_blank" class="download-btn">Download PDF →</a>
+        </div>
+        <div class="download-row">
+          <div>
+            <div class="download-name">Accounts</div>
+            <div class="download-date">2025</div>
+          </div>
+          <a href="https://holmfirthcc.com/wp-content/uploads/2026/02/HCC-Accounts-2025.pdf" target="_blank" class="download-btn">Download PDF →</a>
+        </div>
+        <div class="download-row">
+          <div>
+            <div class="download-name">Committee Meeting Minutes</div>
+            <div class="download-date">December 2025</div>
+          </div>
+          <a href="https://holmfirthcc.com/wp-content/uploads/2026/01/HCC-Committee-Meeting-Minutes-December-2025.pdf" target="_blank" class="download-btn">Download PDF →</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">Holmfirth CC</div>
+        <p class="footer-tagline">Promoting the amateur sport of cycling in the Holme Valley since 2013.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/holmfirthcyclingclub" target="_blank" aria-label="Instagram">IG</a>
+          <a href="https://www.facebook.com/Holmfirth-Cycling-Club-239784446186782/" target="_blank" aria-label="Facebook">FB</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Riding</div>
+        <ul class="footer-links">
+          <li><a href="rides.html">Ride groups</a></li>
+          <li><a href="https://ridewithgps.com" target="_blank">Ride With GPS</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Club</div>
+        <ul class="footer-links">
+          <li><a href="join.html">Join or renew</a></li>
+          <li><a href="about.html#committee">Committee</a></li>
+          <li><a href="about.html#constitution">Constitution</a></li>
+          <li><a href="about.html#safeguarding">Safeguarding</a></li>
+          <li><a href="contact.html">Contact us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Events</div>
+        <ul class="footer-links">
+          <li><a href="events.html">Upcoming events</a></li>
+          <li><a href="about.html#coaching">Coaching</a></li>
+          <li><a href="about.html#kit">Club kit</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Holmfirth Cycling Club.</span>
+      <div class="footer-affil">
+        <span>British Cycling</span><span>Cycling UK</span><span>CTT</span><span>YCF</span><span>Clubmark</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

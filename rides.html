@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Club Rides — Holmfirth Cycling Club</title>
+  <meta name="description" content="Holmfirth CC group rides every Sunday. Groups A through D for all abilities — from 15-mile beginner rides to 95-mile Group D epics. Routes on Ride With GPS.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    [data-reveal].revealed { opacity: 1; transform: none; }
+    [data-reveal-delay="1"] { transition-delay: 0.1s; }
+    [data-reveal-delay="2"] { transition-delay: 0.2s; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-mark">HCC</div>
+    <span class="nav-logo-text">Holmfirth CC</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="rides.html" class="active">Rides</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="join.html" class="nav-join">Join the club</a></li>
+  </ul>
+  <button class="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-pattern"></div>
+  <div class="page-hero-content">
+    <div class="section-label">Every Sunday</div>
+    <h1>Club<br>rides</h1>
+    <p>All groups set off together from Holmfirth. Find the group that matches your pace, distance and ambition — then just turn up.</p>
+  </div>
+</div>
+
+<div style="padding: 80px 32px; background: var(--white);">
+  <div style="max-width: var(--max-w); margin: 0 auto;">
+
+    <!-- Meeting info -->
+    <div data-reveal>
+      <div class="section-label">Getting there</div>
+      <h2 class="section-title">When &amp; where</h2>
+      <p class="section-body">Non-members are welcome to join us for up to two rides before joining. Please contact the Club Runs Co-ordinator beforehand so we can expect you.</p>
+    </div>
+    <div class="meet-tiles" data-reveal data-reveal-delay="1">
+      <div class="meet-tile">
+        <div class="meet-tile-label">Day</div>
+        <div class="meet-tile-val">Sunday mornings</div>
+        <div class="meet-tile-sub">Check Ride With GPS for start time — Group D may start earlier</div>
+      </div>
+      <div class="meet-tile">
+        <div class="meet-tile-label">Meeting point</div>
+        <div class="meet-tile-val">Holmfirth town centre</div>
+        <div class="meet-tile-sub">Contact the Club Runs Co-ordinator for the exact location</div>
+      </div>
+      <div class="meet-tile">
+        <div class="meet-tile-label">Routes</div>
+        <div class="meet-tile-val">Ride With GPS</div>
+        <div class="meet-tile-sub">This week's routes posted every Saturday — download before you ride</div>
+      </div>
+    </div>
+
+    <!-- RWGPS card -->
+    <div style="background: var(--black); border-radius: var(--radius); padding: 32px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 64px;" data-reveal>
+      <div>
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 8px;">This week's routes</div>
+        <div style="font-family: var(--font-display); font-size: 26px; font-weight: 800; text-transform: uppercase; color: white; margin-bottom: 6px; line-height: 1;">HCC on Ride With GPS</div>
+        <div style="color: rgba(255,255,255,0.5); font-size: 14px; font-weight: 300;">All routes posted here each week. Download to Garmin, Wahoo or your phone.</div>
+      </div>
+      <a href="https://ridewithgps.com" target="_blank" rel="noopener" class="btn btn-red btn-lg btn-arrow">Open Ride With GPS</a>
+    </div>
+
+    <!-- Group cards -->
+    <div data-reveal>
+      <div class="section-label">The groups</div>
+      <h2 class="section-title">Which group suits you?</h2>
+      <p class="section-body">Not sure? Come along and ask — the Club Runs Co-ordinator will point you in the right direction.</p>
+    </div>
+
+    <div class="group-cards" style="margin-top: 40px;" data-reveal data-reveal-delay="1">
+
+      <div class="group-card">
+        <div class="group-card-header">
+          <div class="group-card-letter">A</div>
+          <div>
+            <div class="group-card-title">Group A — beginners &amp; returners</div>
+            <div class="group-card-summary">No experience needed · Very sociable · Arranged when needed</div>
+          </div>
+          <div class="group-card-stats">
+            <div class="group-card-dist">15–20 mi</div>
+            <div class="group-card-pace">Steady pace</div>
+          </div>
+        </div>
+        <div class="group-card-body">
+          This is our entry-level group ride, aimed at those who haven't been on a bike for a while or who are building towards riding with Group B. It's a very friendly and sociable ride with no expectation of prior group riding experience. An experienced club member will be on hand to offer advice on gear selection, road position, group riding skills and general cycling topics.
+          <div class="group-tags">
+            <span class="group-tag">15–20 miles</span>
+            <span class="group-tag">No experience needed</span>
+            <span class="group-tag">Café stop</span>
+            <span class="group-tag">Arranged on demand</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="group-card">
+        <div class="group-card-header">
+          <div class="group-card-letter">B</div>
+          <div>
+            <div class="group-card-title">Group B — short &amp; long options</div>
+            <div class="group-card-summary">Medium pace · Café stop · Re-groups on hills</div>
+          </div>
+          <div class="group-card-stats">
+            <div class="group-card-dist">25–50 mi</div>
+            <div class="group-card-pace">10.5–12 mph</div>
+          </div>
+        </div>
+        <div class="group-card-body">
+          A sociable medium-pace ride that includes a café stop. The <strong>short option</strong> covers around 30 miles (approx. 3 hours riding time) and the <strong>long option</strong> covers around 45 miles (approx. 4 hours). Both rides re-group regularly — particularly after hills — making them accessible to riders still building fitness. A good stepping stone toward faster groups.
+          <div class="group-tags">
+            <span class="group-tag">25–50 miles</span>
+            <span class="group-tag">10.5–12 mph</span>
+            <span class="group-tag">Café stop</span>
+            <span class="group-tag">Re-groups on hills</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="group-card">
+        <div class="group-card-header">
+          <div class="group-card-letter">C</div>
+          <div>
+            <div class="group-card-title">Group C — short &amp; long options</div>
+            <div class="group-card-summary">Faster pace · Café stop · Routes often set on the day</div>
+          </div>
+          <div class="group-card-stats">
+            <div class="group-card-dist">40–70 mi</div>
+            <div class="group-card-pace">12–14 mph</div>
+          </div>
+        </div>
+        <div class="group-card-body">
+          For riders who want a quicker pace than Group B. A café stop is included. The <strong>short option</strong> covers 40–50 miles and the <strong>long option</strong> 50–70 miles, with the long ride typically aiming to be back by 15:00. Routes and café stop options are often decided on the day amongst those present, though a route planner usually agrees a route the week before.
+          <div class="group-tags">
+            <span class="group-tag">40–70 miles</span>
+            <span class="group-tag">12–14 mph</span>
+            <span class="group-tag">Café stop</span>
+            <span class="group-tag">Back by 15:00 (long)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="group-card">
+        <div class="group-card-header">
+          <div class="group-card-letter">D</div>
+          <div>
+            <div class="group-card-title">Group D — fast &amp; far</div>
+            <div class="group-card-summary">Through and off · Tight twos · Gravel options</div>
+          </div>
+          <div class="group-card-stats">
+            <div class="group-card-dist">70–95+ mi</div>
+            <div class="group-card-pace">13.5–15.5 mph</div>
+          </div>
+        </div>
+        <div class="group-card-body">
+          Social but demanding. These rides require a decent level of fitness and bike-handling ability. The group rides in <strong>tight twos</strong> and uses <strong>through-and-off</strong> technique, which creates a smoother and faster ride — this takes discipline from the whole group. Don't worry if you haven't ridden like this before; other members will help you, though if you're not comfortable with this riding style, Group D is not for you right now.
+          <br><br>
+          Group D rides may start earlier than other groups and include gravel rides when conditions and routes are favourable.
+          <div class="group-tags">
+            <span class="group-tag">70–95+ miles</span>
+            <span class="group-tag">13.5–15.5 mph</span>
+            <span class="group-tag">Through and off</span>
+            <span class="group-tag">Tight twos</span>
+            <span class="group-tag">Gravel options</span>
+            <span class="group-tag">Early start possible</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /group-cards -->
+
+    <!-- Guidance section -->
+    <div style="margin-top: 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;" id="guidance" data-reveal>
+      <div style="background: var(--light); border-radius: var(--radius); padding: 32px;">
+        <div class="section-label">Safety</div>
+        <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">Ride guidance</h3>
+        <p style="font-size: 14px; font-weight: 300; color: var(--gray); line-height: 1.7;">All riders are expected to follow the Highway Code and ride in a manner that is safe and considerate to other road users. Club guidance documents cover road positioning, signalling, group riding etiquette and what to do if you get a puncture or mechanical.</p>
+        <a href="contact.html" style="display: inline-block; margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--red);">Request guidance documents →</a>
+      </div>
+      <div style="background: var(--light); border-radius: var(--radius); padding: 32px;" id="young">
+        <div class="section-label">Young riders</div>
+        <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">Juniors &amp; coaching</h3>
+        <p style="font-size: 14px; font-weight: 300; color: var(--gray); line-height: 1.7;">HCC runs a Go Ride coaching programme for younger riders. We also have specific guidance for young riders joining club runs. Get in touch with our Club Coach for more information.</p>
+        <a href="about.html#coaching" style="display: inline-block; margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--red);">Coaching details →</a>
+      </div>
+    </div>
+
+    <!-- E-bikes -->
+    <div style="margin-top: 16px; background: var(--light); border-radius: var(--radius); padding: 32px;" id="ebikes" data-reveal>
+      <div class="section-label">Electric bikes</div>
+      <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">E-bike policy</h3>
+      <p style="font-size: 14px; font-weight: 300; color: var(--gray); line-height: 1.7; max-width: 640px;">Riders on electric bikes are welcome at HCC. We ask that e-bike riders join the group appropriate to their ability without motor assistance, so that the experience is consistent for the whole group. If you have questions about riding an e-bike with us, please get in touch.</p>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div style="margin-top: 64px; text-align: center; padding: 48px; background: var(--black); border-radius: var(--radius);" data-reveal>
+      <div style="font-family: var(--font-display); font-size: 32px; font-weight: 800; text-transform: uppercase; color: white; margin-bottom: 10px;">Ready to ride?</div>
+      <p style="color: rgba(255,255,255,0.55); font-weight: 300; font-size: 15px; margin-bottom: 28px;">Non-members welcome for two trial rides. Contact us first so we can expect you.</p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="contact.html?to=runs" class="btn btn-red btn-arrow">Contact the Runs Co-ordinator</a>
+        <a href="join.html" class="btn btn-outline">Join the club →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">Holmfirth CC</div>
+        <p class="footer-tagline">Promoting the amateur sport of cycling in the Holme Valley since 2013.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/holmfirthcyclingclub" target="_blank" aria-label="Instagram">IG</a>
+          <a href="https://www.facebook.com/Holmfirth-Cycling-Club-239784446186782/" target="_blank" aria-label="Facebook">FB</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Riding</div>
+        <ul class="footer-links">
+          <li><a href="rides.html">Ride groups</a></li>
+          <li><a href="https://ridewithgps.com" target="_blank">Ride With GPS</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Club</div>
+        <ul class="footer-links">
+          <li><a href="join.html">Join or renew</a></li>
+          <li><a href="about.html#committee">Committee</a></li>
+          <li><a href="contact.html">Contact us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Events</div>
+        <ul class="footer-links">
+          <li><a href="events.html">Upcoming events</a></li>
+          <li><a href="about.html#coaching">Coaching</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Holmfirth Cycling Club.</span>
+      <div class="footer-affil">
+        <span>British Cycling</span><span>Cycling UK</span><span>CTT</span><span>YCF</span><span>Clubmark</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

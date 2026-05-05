@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Holmfirth Cycling Club</title>
+  <meta name="description" content="Contact Holmfirth Cycling Club — membership enquiries, club runs, coaching, welfare and general questions.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    [data-reveal].revealed { opacity: 1; transform: none; }
+    [data-reveal-delay="1"] { transition-delay: 0.15s; }
+    .form-success { display: none; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: var(--radius); padding: 20px 24px; color: #2e7d32; font-size: 15px; margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-mark">HCC</div>
+    <span class="nav-logo-text">Holmfirth CC</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="rides.html">Rides</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html" class="active">Contact</a></li>
+    <li><a href="join.html" class="nav-join">Join the club</a></li>
+  </ul>
+  <button class="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-pattern"></div>
+  <div class="page-hero-content">
+    <div class="section-label">Get in touch</div>
+    <h1>Contact<br>us</h1>
+    <p>Whether you want to try a ride, ask about membership or have a question for the committee — we're happy to hear from you.</p>
+  </div>
+</div>
+
+<div style="padding: 80px 32px; background: var(--white);">
+  <div style="max-width: var(--max-w); margin: 0 auto;">
+    <div class="contact-grid" data-reveal>
+
+      <!-- Form -->
+      <div>
+        <div class="section-label">Send a message</div>
+        <h2 class="section-title" style="margin-bottom: 32px;">Drop us a line</h2>
+        <form class="contact-form" id="contactForm">
+          <div class="form-group">
+            <label for="name">Your name</label>
+            <input type="text" id="name" name="name" placeholder="Jane Smith" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" placeholder="jane@example.com" required>
+          </div>
+          <div class="form-group">
+            <label for="to">Who do you want to contact?</label>
+            <select id="to" name="to">
+              <option value="general">General enquiry</option>
+              <option value="membership">Membership Secretary</option>
+              <option value="runs">Club Runs Co-ordinator</option>
+              <option value="coaching">Club Coach</option>
+              <option value="welfare">Welfare Officer</option>
+              <option value="committee">Committee</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Tell us what you'd like to know..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-red" style="width: 100%; justify-content: center;">Send message →</button>
+          <div class="form-success" id="formSuccess">
+            Thanks for getting in touch! We'll get back to you as soon as we can.
+          </div>
+        </form>
+      </div>
+
+      <!-- Info -->
+      <div>
+        <div class="section-label">Quick links</div>
+        <h2 class="section-title" style="margin-bottom: 32px;">Who to contact</h2>
+
+        <div class="contact-info-item">
+          <div class="contact-info-icon">🚲</div>
+          <div>
+            <div class="contact-info-label">Club Runs Co-ordinator</div>
+            <div class="contact-info-val">Richard Needham</div>
+            <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Questions about Sunday rides, which group to join, trial rides</div>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-info-icon">📋</div>
+          <div>
+            <div class="contact-info-label">Membership Secretary</div>
+            <div class="contact-info-val">Carol Macklin</div>
+            <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Joining, renewals, insurance questions</div>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-info-icon">🏅</div>
+          <div>
+            <div class="contact-info-label">Club Coach</div>
+            <div class="contact-info-val">Tracey Coldwell &amp; Peter Root</div>
+            <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Coaching programmes, Go Ride, junior development</div>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-info-icon">🛡</div>
+          <div>
+            <div class="contact-info-label">Welfare Officers</div>
+            <div class="contact-info-val">Alison Hughes &amp; Emily Murphy</div>
+            <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Safeguarding concerns, welfare issues</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 32px; padding: 20px; background: var(--light); border-radius: var(--radius);">
+          <div class="contact-info-label" style="margin-bottom: 10px;">Follow us</div>
+          <div style="display: flex; gap: 10px;">
+            <a href="https://www.instagram.com/holmfirthcyclingclub" target="_blank" class="btn btn-outline-dark" style="font-size: 13px; padding: 8px 16px;">Instagram →</a>
+            <a href="https://www.facebook.com/Holmfirth-Cycling-Club-239784446186782/" target="_blank" class="btn btn-outline-dark" style="font-size: 13px; padding: 8px 16px;">Facebook →</a>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; padding: 20px; background: var(--light); border-radius: var(--radius);">
+          <div class="contact-info-label" style="margin-bottom: 10px;">Ready to join?</div>
+          <p style="font-size: 13px; font-weight: 300; color: var(--gray); margin-bottom: 12px;">Membership starts at just £10/year via MemberMojo.</p>
+          <a href="join.html" class="btn btn-red" style="font-size: 13px; padding: 9px 18px;">Join Holmfirth CC →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">Holmfirth CC</div>
+        <p class="footer-tagline">Promoting the amateur sport of cycling in the Holme Valley since 2013.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/holmfirthcyclingclub" target="_blank" aria-label="Instagram">IG</a>
+          <a href="https://www.facebook.com/Holmfirth-Cycling-Club-239784446186782/" target="_blank" aria-label="Facebook">FB</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Riding</div>
+        <ul class="footer-links">
+          <li><a href="rides.html">Ride groups</a></li>
+          <li><a href="https://ridewithgps.com" target="_blank">Ride With GPS</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Club</div>
+        <ul class="footer-links">
+          <li><a href="join.html">Join or renew</a></li>
+          <li><a href="about.html#committee">Committee</a></li>
+          <li><a href="about.html#constitution">Constitution</a></li>
+          <li><a href="about.html#safeguarding">Safeguarding</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Events</div>
+        <ul class="footer-links">
+          <li><a href="events.html">Upcoming events</a></li>
+          <li><a href="about.html#coaching">Coaching</a></li>
+          <li><a href="about.html#kit">Club kit</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Holmfirth Cycling Club.</span>
+      <div class="footer-affil">
+        <span>British Cycling</span><span>Cycling UK</span><span>CTT</span><span>YCF</span><span>Clubmark</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+  // Pre-select the "to" dropdown from URL param
+  const params = new URLSearchParams(window.location.search);
+  const toParam = params.get('to');
+  if (toParam) {
+    const sel = document.getElementById('to');
+    if (sel) {
+      const opt = sel.querySelector(`option[value="${toParam}"]`);
+      if (opt) opt.selected = true;
+    }
+  }
+
+  // Simple form demo (replace with Netlify/Formspree action in production)
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    document.getElementById('formSuccess').style.display = 'block';
+    this.reset();
+    this.querySelector('button[type=submit]').textContent = 'Sent ✓';
+    this.querySelector('button[type=submit]').disabled = true;
+  });
+</script>
+</body>
+</html>
