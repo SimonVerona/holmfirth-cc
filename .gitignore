@@ -1,6 +1,12 @@
-# wrangler files
-.wrangler
-.dev.vars*
-!.dev.vars.example
-.env*
-!.env.example
+# Wrangler local dev secrets — never commit
+.dev.vars
+
+# Wrangler build output
+.wrangler/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

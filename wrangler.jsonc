@@ -2,13 +2,45 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "holmfirth-cc",
   "compatibility_date": "2026-05-22",
+  "compatibility_flags": ["nodejs_compat"],
+
+  /**
+   * Static assets served from repo root.
+   * Worker handles /api/* routes; everything else falls through to assets.
+   */
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+
+  /**
+   * Worker entry point — handles /api/* routes.
+   * Secrets (NOT stored here — use `wrangler secret put`):
+   *   RWGPS_API_KEY
+   *   RWGPS_AUTH_TOKEN
+   *   RWGPS_CLUB_ID
+   *
+   * To set them:
+   *   npx wrangler secret put RWGPS_API_KEY
+   *   npx wrangler secret put RWGPS_AUTH_TOKEN
+   *   npx wrangler secret put RWGPS_CLUB_ID
+   */
+  "main": "worker/index.js",
+
   "observability": {
     "enabled": true
   },
-  "assets": {
-    "directory": "."
-  },
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
+
+  /**
+   * For local dev only — copy this block to a .dev.vars file (gitignored)
+   * and fill in real values. Never put real secrets here.
+   *
+   * .dev.vars contents:
+   *   RWGPS_API_KEY=your_key_here
+   *   RWGPS_AUTH_TOKEN=your_token_here
+   *   RWGPS_CLUB_ID=your_club_id_here
+   */
+  "dev": {
+    "port": 8787
+  }
 }

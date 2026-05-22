@@ -1076,3 +1076,83 @@ footer {
   .group-card-stats { display: none; }
 }
 
+
+/* ─── RWGPS live data states ────────────────────────────── */
+.skeleton-pulse {
+  background: linear-gradient(90deg, var(--offwhite) 25%, var(--light) 50%, var(--offwhite) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+  border-radius: var(--radius);
+}
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.event-row-skeleton { height: 72px; margin-bottom: 2px; }
+.rwgps-error {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #fff3f3;
+  border-left: 3px solid var(--red);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 14px;
+  color: var(--gray);
+}
+.rwgps-retry-btn {
+  background: none;
+  border: 1px solid var(--red);
+  color: var(--red);
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.rwgps-empty { padding: 32px 0; color: var(--gray); font-size: 14px; }
+.rwgps-load-more { margin-top: 32px; text-align: center; }
+
+/* ─── Blog grid ─────────────────────────────────────────── */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 28px;
+}
+.blog-card {
+  background: var(--white);
+  border: 1px solid var(--offwhite);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.blog-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+.blog-card-img {
+  height: 180px;
+  background-color: var(--offwhite);
+  background-size: cover;
+  background-position: center;
+}
+.blog-card-img--placeholder {
+  background-image: repeating-linear-gradient(
+    -45deg, transparent, transparent 12px,
+    rgba(212,43,43,0.07) 12px, rgba(212,43,43,0.07) 13px
+  );
+}
+.blog-card-body { padding: 20px 24px 24px; }
+.blog-card-date {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--red); margin-bottom: 8px;
+}
+.blog-card-title {
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  text-transform: uppercase; line-height: 1.2; margin-bottom: 8px;
+}
+.blog-card-title a { color: var(--black); text-decoration: none; }
+.blog-card-title a:hover { color: var(--red); }
+.blog-card-stats {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+  color: var(--gray); margin-bottom: 10px;
+}
+.blog-card-excerpt { font-size: 14px; color: var(--gray); line-height: 1.6; }
+.blog-card-skeleton { height: 300px; }

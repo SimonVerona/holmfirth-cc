@@ -31,7 +31,7 @@
     .fr-tagline span { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; font-style: italic; color: var(--red, #D0021B); letter-spacing: 0.01em; }
   </style>
 </head>
-<body>
+<body data-page="home">
 
 <!-- ── NAV ── -->
 <nav class="nav">
@@ -43,6 +43,7 @@
     <li><a href="index.html" class="active">Home</a></li>
     <li><a href="rides.html">Rides</a></li>
     <li><a href="events.html">Events</a></li>
+    <li><a href="blog.html">Ride writeups</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="contact.html">Contact</a></li>
     <li><a href="join.html" class="nav-join">Join the community</a></li>
@@ -248,40 +249,9 @@
       </div>
       <a href="events.html" class="btn btn-outline-dark">All events →</a>
     </div>
-    <div class="events-list" data-reveal data-reveal-delay="1">
-      <div class="event-row">
-        <div class="event-date-box">
-          <div class="event-date-day">18</div>
-          <div class="event-date-month">May</div>
-        </div>
-        <div>
-          <div class="event-name">Spring club run &amp; café stop</div>
-          <div class="event-meta">All groups · Holmfirth market square · Route on Ride With GPS</div>
-        </div>
-        <span class="event-tag ride">Club ride</span>
-      </div>
-      <div class="event-row">
-        <div class="event-date-box">
-          <div class="event-date-day">01</div>
-          <div class="event-date-month">Jun</div>
-        </div>
-        <div>
-          <div class="event-name">CTT 10-mile time trial</div>
-          <div class="event-meta">Open event organised by HCC · Pre-entry via CTT website</div>
-        </div>
-        <span class="event-tag race">Race</span>
-      </div>
-      <div class="event-row">
-        <div class="event-date-box">
-          <div class="event-date-day">14</div>
-          <div class="event-date-month">Jun</div>
-        </div>
-        <div>
-          <div class="event-name">Group D gravel ride</div>
-          <div class="event-meta">Longer off-road option · Details posted on Ride With GPS</div>
-        </div>
-        <span class="event-tag ride">Club ride</span>
-      </div>
+    <!-- Live events — populated by js/main.js → loadHomeEvents() -->
+    <div id="home-events" class="events-list" data-reveal data-reveal-delay="1">
+      <!-- Skeleton injected here while loading -->
     </div>
   </div>
 </div>
@@ -378,7 +348,7 @@
   </div>
 </footer>
 
-<script src="js/main.js"></script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
 

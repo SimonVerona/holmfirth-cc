@@ -1,0 +1,13 @@
+# .dev.vars — local development secrets for `wrangler dev`
+# DO NOT commit this file. It is gitignored.
+# Copy this file, rename to .dev.vars, and fill in real values.
+#
+# Get these from:
+#   RWGPS_API_KEY    → ridewithgps.com/account/edit → Developer → API Clients
+#   RWGPS_AUTH_TOKEN → same page → your API Client → Create Auth Token
+#   RWGPS_CLUB_ID    → the numeric ID in your club's RWGPS URL
+#                      e.g. ridewithgps.com/clubs/12345 → 12345
+
+RWGPS_API_KEY=your_api_key_here
+RWGPS_AUTH_TOKEN=your_auth_token_here
+RWGPS_CLUB_ID=your_club_id_here
