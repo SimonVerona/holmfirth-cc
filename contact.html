@@ -13,7 +13,7 @@
     .form-success { display: none; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: var(--radius); padding: 20px 24px; color: #2e7d32; font-size: 15px; margin-top: 16px; }
   </style>
 </head>
-<body>
+<body data-page="contact">
 
 <nav class="nav">
   <a href="index.html" class="nav-logo">
@@ -24,6 +24,7 @@
     <li><a href="index.html">Home</a></li>
     <li><a href="rides.html">Rides</a></li>
     <li><a href="events.html">Events</a></li>
+    <li><a href="blog.html">Ride writeups</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="contact.html" class="active">Contact</a></li>
     <li><a href="join.html" class="nav-join">Join the club</a></li>
@@ -187,7 +188,7 @@
   </div>
 </footer>
 
-<script src="js/main.js"></script>
+<script type="module" src="js/main.js"></script>
 <script>
   // Pre-select the "to" dropdown from URL param
   const params = new URLSearchParams(window.location.search);
