@@ -34,12 +34,11 @@ document.addEventListener('DOMContentLoaded', function () {
   // ── Page-specific data loading ──────────────────────────────────────────────
   const page = document.body.dataset.page;
 
-  if (page === 'home')   loadHomeEvents();
-  if (page === 'events') loadEventsPage();
-  if (page === 'blog')   loadBlogPage();
+  if (page === 'home') loadHomeEvents();
+  if (page === 'blog') loadBlogPage();
 });
 
-// ─── Home page — upcoming events preview (3 items) ───────────────────────────
+// ─── Home page — upcoming rides preview (3 items) ────────────────────────────
 async function loadHomeEvents() {
   const container = document.getElementById('home-events');
   if (!container) return;
@@ -51,39 +50,6 @@ async function loadHomeEvents() {
     renderEventList(container, data.events ?? [], { limit: 3 });
   } catch (err) {
     showError(container, 'Could not load events right now.', loadHomeEvents);
-  }
-}
-
-// ─── Events page — full calendar ─────────────────────────────────────────────
-async function loadEventsPage() {
-  const container = document.getElementById('events-list');
-  if (!container) return;
-
-  showLoading(container, 5, 'event-row-skeleton');
-
-  let page = 1;
-  let allEvents = [];
-
-  try {
-    // Load first page; add a "load more" button if pagination exists
-    const data = await getEvents(page);
-    allEvents   = data.events ?? [];
-    renderEventList(container, allEvents);
-
-    const pagination = data.meta?.pagination;
-    if (pagination?.next_page_url) {
-      appendLoadMore(container, async () => {
-        page++;
-        const more = await getEvents(page);
-        allEvents = [...allEvents, ...(more.events ?? [])];
-        renderEventList(container, allEvents);
-        if (!more.meta?.pagination?.next_page_url) {
-          container.querySelector('.rwgps-load-more')?.remove();
-        }
-      });
-    }
-  } catch (err) {
-    showError(container, 'Could not load events right now.', loadEventsPage);
   }
 }
 
