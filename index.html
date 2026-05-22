@@ -14,27 +14,21 @@
     [data-reveal-delay="3"] { transition-delay: 0.3s; }
     [data-reveal-delay="4"] { transition-delay: 0.4s; }
 
-    /* First ride section */
-    .first-ride-steps { display: flex; flex-direction: column; gap: 0; margin-top: 48px; }
-    .fr-step { display: flex; gap: 24px; align-items: flex-start; padding: 28px 0; border-bottom: 1px solid #e8e8e8; }
+    /* First ride section — hero background */
+    .first-ride-hero { position: relative; background: url('images/cafe_stop_hero.jpg') center 30% / cover no-repeat; padding: 96px 32px; }
+    .first-ride-hero::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.62); }
+    .first-ride-hero > * { position: relative; }
+    .first-ride-hero .section-label { color: var(--red, #D0021B); }
+    .first-ride-hero .section-title { color: #fff; }
+    .first-ride-hero .section-body { color: rgba(255,255,255,0.7); }
+    .first-ride-steps { display: flex; flex-direction: column; gap: 0; margin-top: 48px; max-width: 640px; }
+    .fr-step { display: flex; gap: 24px; align-items: flex-start; padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.12); }
     .fr-step:last-child { border-bottom: none; }
     .fr-step-num { flex-shrink: 0; width: 44px; height: 44px; background: var(--red, #D0021B); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 700; }
-    .fr-step-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 6px; color: var(--black, #111); }
-    .fr-step-desc { font-size: 0.95rem; color: #555; line-height: 1.6; }
+    .fr-step-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 6px; color: #fff; }
+    .fr-step-desc { font-size: 0.95rem; color: rgba(255,255,255,0.65); line-height: 1.6; }
     .fr-tagline { margin-top: 56px; text-align: center; }
-    .fr-layout { display: flex; flex-direction: column; gap: 48px; margin-top: 48px; }
-    .fr-image { flex-shrink: 0; }
-    .fr-image img { width: 100%; height: 420px; object-fit: cover; object-position: center 30%; border-radius: 4px; display: block; }
-    @media (min-width: 900px) {
-      .fr-layout { flex-direction: row; align-items: stretch; gap: 64px; }
-      .first-ride-steps { flex: 1; }
-      .fr-image { flex: 0 0 380px; display: flex; }
-      .fr-image img { height: 100%; width: 100%; object-fit: cover; object-position: center 30%; border-radius: 4px; display: block; }
-    }
     .fr-tagline span { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; font-style: italic; color: var(--red, #D0021B); letter-spacing: 0.01em; }
-    @media (min-width: 768px) {
-      .first-ride-steps { max-width: 680px; margin-left: auto; margin-right: auto; }
-    }
   </style>
 </head>
 <body>
@@ -171,14 +165,14 @@
 </div>
 
 <!-- ── FIRST RIDE ── -->
-<div style="background: var(--off-white, #f8f8f8); padding: 96px 32px;">
+<div class="first-ride-hero">
   <div style="max-width: var(--max-w); margin: 0 auto;">
     <div data-reveal>
       <div class="section-label">New to the club?</div>
       <h2 class="section-title">Your first ride</h2>
       <p class="section-body">It's simpler than you think. No joining fee to try us out, no awkward introductions — just turn up and ride.</p>
     </div>
-    <div class="fr-layout" data-reveal data-reveal-delay="1">
+    <div data-reveal data-reveal-delay="1">
     <div class="first-ride-steps">
       <div class="fr-step">
         <div class="fr-step-num">1</div>
@@ -216,9 +210,6 @@
         </div>
       </div>
     </div>
-      <div class="fr-image">
-        <img src="images/cafe_stop_hero.jpg" alt="Holmfirth CC members enjoying a café stop in the sunshine" loading="lazy">
-      </div>
     </div>
     <div class="fr-tagline" data-reveal data-reveal-delay="2">
       <span>"Nobody gets left behind."</span>
@@ -352,6 +343,7 @@
 <script src="js/main.js"></script>
 </body>
 </html>
+
 
 
 
