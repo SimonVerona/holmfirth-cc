@@ -623,12 +623,10 @@ footer {
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: var(--radius);
   display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.55);
-  font-size: 13px;
-  font-weight: 600;
   transition: all 0.15s;
 }
-.footer-social a:hover { border-color: var(--red); color: white; background: var(--red); }
+.footer-social a:hover { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+.footer-social a svg { display: block; }
 .footer-col-title {
   font-size: 11px;
   font-weight: 700;
@@ -1077,3 +1075,4 @@ footer {
   .group-card-header { grid-template-columns: 48px 1fr; }
   .group-card-stats { display: none; }
 }
+
