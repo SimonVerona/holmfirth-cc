@@ -671,6 +671,15 @@ footer {
   text-transform: uppercase;
   color: rgba(255,255,255,0.2);
 }
+.footer-affil-bc {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.45;
+  transition: opacity 0.2s;
+}
+.footer-affil-bc:hover {
+  opacity: 0.75;
+}
 
 /* ─── INNER PAGE HERO ─────────────────────────────────── */
 .page-hero {
@@ -1156,3 +1165,4 @@ footer {
 }
 .blog-card-excerpt { font-size: 14px; color: var(--gray); line-height: 1.6; }
 .blog-card-skeleton { height: 300px; }
+
