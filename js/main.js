@@ -13,23 +13,11 @@ import {
 } from './rwgps.js';
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
+// Nav toggle and active-link logic is handled in js/components.js after the
+// shared nav component is injected.
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function () {
-  // Mobile nav toggle
-  const toggle = document.querySelector('.nav-toggle');
-  const links  = document.querySelector('.nav-links');
-  if (toggle && links) {
-    toggle.addEventListener('click', () => links.classList.toggle('open'));
-    links.querySelectorAll('a').forEach(a =>
-      a.addEventListener('click', () => links.classList.remove('open'))
-    );
-  }
-
-  // Active nav link
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.nav-links a').forEach(a => {
-    if (a.getAttribute('href') === currentPage) a.classList.add('active');
-  });
-
   // Scroll reveal
   if ('IntersectionObserver' in window) {
     const obs = new IntersectionObserver(
