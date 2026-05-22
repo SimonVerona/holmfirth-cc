@@ -22,6 +22,15 @@
     .fr-step-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 6px; color: var(--black, #111); }
     .fr-step-desc { font-size: 0.95rem; color: #555; line-height: 1.6; }
     .fr-tagline { margin-top: 56px; text-align: center; }
+    .fr-layout { display: flex; flex-direction: column; gap: 48px; margin-top: 48px; }
+    .fr-image { flex-shrink: 0; }
+    .fr-image img { width: 100%; height: 420px; object-fit: cover; object-position: center 30%; border-radius: 4px; display: block; }
+    @media (min-width: 900px) {
+      .fr-layout { flex-direction: row; align-items: flex-start; gap: 64px; }
+      .first-ride-steps { flex: 1; }
+      .fr-image { flex: 0 0 380px; position: sticky; top: 96px; }
+      .fr-image img { height: 500px; }
+    }
     .fr-tagline span { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; font-style: italic; color: var(--red, #D0021B); letter-spacing: 0.01em; }
     @media (min-width: 768px) {
       .first-ride-steps { max-width: 680px; margin-left: auto; margin-right: auto; }
@@ -169,7 +178,8 @@
       <h2 class="section-title">Your first ride</h2>
       <p class="section-body">It's simpler than you think. No joining fee to try us out, no awkward introductions — just turn up and ride.</p>
     </div>
-    <div class="first-ride-steps" data-reveal data-reveal-delay="1">
+    <div class="fr-layout" data-reveal data-reveal-delay="1">
+    <div class="first-ride-steps">
       <div class="fr-step">
         <div class="fr-step-num">1</div>
         <div class="fr-step-body">
@@ -204,6 +214,10 @@
           <div class="fr-step-title">Café stop included</div>
           <div class="fr-step-desc">Every ride includes a café stop. It's as much a part of the club as the miles — and usually the highlight.</div>
         </div>
+      </div>
+    </div>
+      <div class="fr-image">
+        <img src="images/cafe_stop_hero.jpg" alt="Holmfirth CC members enjoying a café stop in the sunshine" loading="lazy">
       </div>
     </div>
     <div class="fr-tagline" data-reveal data-reveal-delay="2">
@@ -337,6 +351,7 @@
 <script src="js/main.js"></script>
 </body>
 </html>
+
 
 
 
