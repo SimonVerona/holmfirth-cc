@@ -14,6 +14,45 @@
     [data-reveal].revealed { opacity: 1; transform: none; }
     [data-reveal-delay="1"] { transition-delay: 0.1s; }
     [data-reveal-delay="2"] { transition-delay: 0.2s; }
+
+    /* ── Upcoming events ── */
+    .event-row {
+      display: flex; align-items: center; gap: 20px;
+      padding: 18px 0; border-bottom: 1px solid var(--light);
+    }
+    .event-row:last-child { border-bottom: none; }
+    .event-date-box {
+      flex-shrink: 0; width: 52px; text-align: center;
+      background: var(--light); border-radius: 8px; padding: 8px 4px;
+    }
+    .event-date-day {
+      font-family: var(--font-display); font-size: 22px; font-weight: 800;
+      line-height: 1; color: var(--black);
+    }
+    .event-date-month {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--gray); margin-top: 2px;
+    }
+    .event-body { flex: 1; min-width: 0; }
+    .event-name a {
+      font-family: var(--font-display); font-size: 17px; font-weight: 700;
+      text-transform: uppercase; color: var(--black); text-decoration: none;
+    }
+    .event-name a:hover { color: var(--red); }
+    .event-meta { font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 3px; }
+    .event-tag {
+      flex-shrink: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
+      background: var(--light); color: var(--gray);
+    }
+    .event-row-skeleton {
+      height: 72px; border-radius: 8px; background: var(--light);
+      margin-bottom: 8px;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .skeleton-pulse { animation: pulse 1.4s ease-in-out infinite; }
+    .rwgps-empty, .rwgps-error { font-size: 14px; color: var(--gray); padding: 24px 0; }
+    .rwgps-error { color: #c0392b; }
   </style>
 </head>
 <body data-page="rides">
@@ -54,21 +93,17 @@
         <div class="meet-tile-val">Co-op car park, Holmfirth</div>
         <div class="meet-tile-sub">Both Sunday and Wednesday rides start here unless the ride listing says otherwise.</div>
       </div>
-      <div class="meet-tile">
-        <div class="meet-tile-label">Routes</div>
-        <div class="meet-tile-val">Club calendar on Ride with GPS</div>
-        <div class="meet-tile-sub">This week's routes posted each week — download to Garmin, Wahoo or your phone before you ride.</div>
-      </div>
+
     </div>
 
-    <!-- RWGPS card -->
-    <div style="background: var(--black); border-radius: var(--radius); padding: 32px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 64px;" data-reveal>
-      <div>
-        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 8px;">This week's routes</div>
-        <div style="font-family: var(--font-display); font-size: 26px; font-weight: 800; text-transform: uppercase; color: white; margin-bottom: 6px; line-height: 1;">This week's routes</div>
-        <div style="color: rgba(255,255,255,0.5); font-size: 14px; font-weight: 300;">All routes posted here each week. Download to Garmin, Wahoo or your phone.</div>
+    <!-- Upcoming rides (live, next 7 days) -->
+    <div style="margin-bottom: 64px;" data-reveal>
+      <div class="section-label">What's on</div>
+      <h2 class="section-title">Rides this week</h2>
+      <p class="section-body">Upcoming club rides over the next seven days. All routes are available to download before you ride.</p>
+      <div id="upcoming-events" style="margin-top: 28px;">
+        <!-- populated by JS -->
       </div>
-      <a href="https://ridewithgps.com" target="_blank" rel="noopener" class="btn btn-red btn-lg btn-arrow">View routes</a>
     </div>
 
     <!-- Group cards -->
@@ -216,6 +251,54 @@
 
 <div data-component="footer"></div>
 
+<script type="module">
+  import { getEvents, showLoading, showError, formatDateBox, formatDistance, formatElevation, rwgpsEventUrl } from './js/rwgps.js';
+
+  const container = document.getElementById('upcoming-events');
+  if (container) {
+    showLoading(container, 3, 'event-row-skeleton');
+
+    try {
+      const { events = [] } = await getEvents();
+
+      // Filter to next 7 days
+      const now   = Date.now();
+      const cutoff = now + 7 * 24 * 60 * 60 * 1000;
+      const upcoming = events.filter(e => {
+        const t = new Date(e.starts_at || e.start_date).getTime();
+        return t >= now && t <= cutoff;
+      });
+
+      if (!upcoming.length) {
+        container.innerHTML = '<p class="rwgps-empty">No rides scheduled in the next seven days — check back soon.</p>';
+      } else {
+        const escHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        container.innerHTML = upcoming.map(event => {
+          const { day, month } = formatDateBox(event.starts_at || event.start_date);
+          const dist = event.distance ? formatDistance(event.distance) : '';
+          const elev = event.elevation_gain ? `↑ ${formatElevation(event.elevation_gain)}` : '';
+          const meta = [event.location, dist, elev].filter(Boolean).join(' · ');
+          return `
+            <div class="event-row">
+              <div class="event-date-box">
+                <div class="event-date-day">${day}</div>
+                <div class="event-date-month">${month}</div>
+              </div>
+              <div class="event-body">
+                <div class="event-name">
+                  <a href="${rwgpsEventUrl(event.id)}" target="_blank" rel="noopener">${escHtml(event.name)}</a>
+                </div>
+                ${meta ? `<div class="event-meta">${escHtml(meta)}</div>` : ''}
+              </div>
+              <span class="event-tag">Club ride</span>
+            </div>`;
+        }).join('');
+      }
+    } catch (err) {
+      showError(container, 'Could not load upcoming rides. Please try again shortly.');
+    }
+  }
+</script>
 <script src="js/components.js"></script>
 <script type="module" src="js/main.js"></script>
 </body>
