@@ -195,10 +195,8 @@ async function handleRequest(request, env) {
     });
   }
 
-  return new Response(JSON.stringify({ error: 'Not found', path }), {
-    status: 404,
-    headers: { ...cors, 'Content-Type': 'application/json' },
-  });
+  // Fall through to static assets for all non-API routes
+  return env.ASSETS.fetch(request);
 }
 
 function addCors(response, cors) {
