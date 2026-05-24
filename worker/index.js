@@ -42,6 +42,7 @@ function corsHeaders(origin) {
     'https://www.holmfirth.cc',
     'https://holmfirth.cc',
     'https://holmfirth-cc.pages.dev',
+    'https://test.holmfirth.cc',
   ];
   const allowedOrigin = allowed.includes(origin) ? origin : allowed[0];
   return {
