@@ -1,12 +1,12 @@
-const CACHE = 'hcc-v1';
+const CACHE = 'hcc-v2';
 
 const STATIC = [
   '/',
-  '/index.html',
-  '/about.html',
-  '/rides.html',
-  '/join.html',
-  '/contact.html',
+  '/about',
+  '/rides',
+  '/join',
+  '/contact',
+  '/blog',
   '/manifest.json',
   '/css/style.css',
   '/js/main.js',
