@@ -24,10 +24,11 @@
       );
     }
 
-    // Active link — match on filename, treat '' as index.html
-    const current = window.location.pathname.split('/').pop() || 'index.html';
+    // Active link — match on pathname, treat '/' as home
+    const current = window.location.pathname.replace(/\/$/, '') || '/';
     document.querySelectorAll('.nav-links a').forEach(a => {
-      if (a.getAttribute('href') === current) a.classList.add('active');
+      const href = a.getAttribute('href').replace(/\/$/, '') || '/';
+      if (href === current) a.classList.add('active');
     });
   }
 
@@ -44,7 +45,7 @@
 
     placeholders.forEach(function (el) {
       const name = el.getAttribute('data-component');
-      fetch('components/' + name + '.html')
+      fetch('/components/' + name + '.html')
         .then(function (res) {
           if (!res.ok) throw new Error('Failed to load component: ' + name);
           return res.text();
