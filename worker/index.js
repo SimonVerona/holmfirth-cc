@@ -196,7 +196,20 @@ async function handleRequest(request, env) {
     });
   }
 
-  // Fall through to static assets for all non-API routes
+  // Clean URL routing — map /about -> /about.html etc.
+  const cleanUrls = {
+    '/about':   '/about.html',
+    '/rides':   '/rides.html',
+    '/contact': '/contact.html',
+    '/join':    '/join.html',
+    '/blog':    '/blog.html',
+  };
+  if (cleanUrls[path]) {
+    const rewritten = new Request(new URL(cleanUrls[path], request.url).toString(), request);
+    return env.ASSETS.fetch(rewritten);
+  }
+
+  // Fall through to static assets for all other routes
   return env.ASSETS.fetch(request);
 }
 
