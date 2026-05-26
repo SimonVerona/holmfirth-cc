@@ -489,21 +489,14 @@
 
       // Fetch event details in parallel
       const details = await Promise.all(
-        upcoming.map(e => getEvent(e.id).catch(err => {
-          console.warn('getEvent failed for', e.id, err);
-          return { event: e };
-        }))
+        upcoming.map(e => getEvent(e.id).catch(() => ({ event: e })))
       );
 
       // Fetch first route detail (track points) for each event, in parallel
       const routeDetails = await Promise.all(
         details.map(({ event }) => {
           const r = event.routes && event.routes[0];
-          if (!r) { console.warn('No routes on event', event.id, event.name); return Promise.resolve(null); }
-          return getRoute(r.id).catch(err => {
-            console.warn('getRoute failed for', r.id, err);
-            return null;
-          });
+          return r ? getRoute(r.id).catch(() => null) : Promise.resolve(null);
         })
       );
 
