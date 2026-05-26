@@ -17,8 +17,8 @@
   <meta name="apple-mobile-web-app-title" content="HCC">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
     [data-reveal].revealed { opacity: 1; transform: none; }
@@ -468,6 +468,7 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
   // ── Main load ──
+  (async () => {
   const container = document.getElementById('upcoming-events');
   if (container) {
     showLoading(container, 3, 'event-row-skeleton');
@@ -504,13 +505,16 @@
       details.forEach(({ event }, i) => {
         const routeMeta   = event.routes && event.routes[0];
         const routeFull   = routeDetails[i] ? routeDetails[i].route : null;
+        // routeFull has track_points; routeMeta has distance/elevation from event detail
+        // Fall back gracefully whichever layer has the data
         const trackPoints = routeFull ? routeFull.track_points : null;
+        const srcRoute    = routeMeta || routeFull; // prefer routeMeta for stats (already embedded)
 
         const { day, month } = formatDateBox(event.start_date || event.starts_at);
         const time       = event.start_time ? event.start_time.slice(0, 5) : '';
-        const dist       = routeMeta && routeMeta.distance       ? formatDistance(routeMeta.distance) : '';
-        const elev       = routeMeta && routeMeta.elevation_gain ? `↑ ${formatElevation(routeMeta.elevation_gain)}` : '';
-        const routeName  = routeFull ? routeFull.name.trim() : (routeMeta ? routeMeta.name.trim() : '');
+        const dist       = srcRoute && srcRoute.distance       ? formatDistance(srcRoute.distance) : '';
+        const elev       = srcRoute && srcRoute.elevation_gain ? `↑ ${formatElevation(srcRoute.elevation_gain)}` : '';
+        const routeName  = (routeFull || routeMeta) ? (routeFull || routeMeta).name.trim() : '';
         const metaParts  = [event.location, dist, elev].filter(Boolean);
         const meta       = metaParts.join(' · ');
         const metaLine   = [time, meta].filter(Boolean).join(' · ');
@@ -549,6 +553,7 @@
       showError(container, 'Could not load upcoming rides. Please try again shortly.');
     }
   }
+  })();
 </script>
 <script src="/js/components.js"></script>
 <script type="module" src="/js/main.js"></script>
