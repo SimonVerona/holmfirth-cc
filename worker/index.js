@@ -219,6 +219,10 @@ function noStoreHtml(response) {
   if (!ct.includes('text/html')) return response;
   const headers = new Headers(response.headers);
   headers.set('Cache-Control', 'no-store, must-revalidate');
+  headers.set('Pragma', 'no-cache');
+  headers.set('Surrogate-Control', 'no-store');
+  headers.set('CDN-Cache-Control', 'no-store');
+  headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
   return new Response(response.body, { status: response.status, headers });
 }
 
