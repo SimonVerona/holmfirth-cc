@@ -56,8 +56,8 @@ function corsHeaders(origin) {
 // ─── Auth headers for RWGPS ──────────────────────────────────────────────────
 function rwgpsAuth(env) {
   return {
-    'Authorization': `Bearer ${env.RWGPS_AUTH_TOKEN}`,
-    'x-rwgps-api-key': env.RWGPS_API_KEY,
+    'x-rwgps-api-key':   env.RWGPS_API_KEY,
+    'x-rwgps-auth-token': env.RWGPS_AUTH_TOKEN,
     'Accept': 'application/json',
   };
 }
