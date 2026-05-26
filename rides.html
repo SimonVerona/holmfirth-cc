@@ -16,6 +16,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="HCC">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
   <style>
     [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
     [data-reveal].revealed { opacity: 1; transform: none; }
@@ -23,46 +26,89 @@
     [data-reveal-delay="2"] { transition-delay: 0.2s; }
 
     /* ── Upcoming events ── */
-    .event-row {
-      display: flex; align-items: center; gap: 20px;
-      padding: 18px 0; border-bottom: 1px solid var(--light);
+    .event-card {
+      background: var(--white); border: 1px solid var(--light);
+      border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+      cursor: pointer; transition: box-shadow 0.2s, border-color 0.2s;
     }
-    .event-row:last-child { border-bottom: none; }
+    .event-card:hover { border-color: var(--red); box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    .event-card-inner { display: flex; align-items: stretch; gap: 0; }
     .event-date-box {
-      flex-shrink: 0; width: 52px; text-align: center;
-      background: var(--light); border-radius: 8px; padding: 8px 4px;
+      flex-shrink: 0; width: 64px; text-align: center;
+      background: var(--red); padding: 16px 4px; display: flex;
+      flex-direction: column; align-items: center; justify-content: center;
     }
     .event-date-day {
-      font-family: var(--font-display); font-size: 22px; font-weight: 800;
-      line-height: 1; color: var(--black);
+      font-family: var(--font-display); font-size: 26px; font-weight: 800;
+      line-height: 1; color: #fff;
     }
     .event-date-month {
       font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.08em; color: var(--gray); margin-top: 2px;
+      letter-spacing: 0.08em; color: rgba(255,255,255,0.8); margin-top: 3px;
     }
-    .event-body { flex: 1; min-width: 0; }
-    .event-name a {
+    .event-info { flex: 1; min-width: 0; padding: 16px 20px; }
+    .event-name {
       font-family: var(--font-display); font-size: 17px; font-weight: 700;
-      text-transform: uppercase; color: var(--black); text-decoration: none;
+      text-transform: uppercase; color: var(--black); line-height: 1.2;
     }
-    .event-name a:hover { color: var(--red); }
-    .event-meta { font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 3px; }
-    .event-tag {
-      flex-shrink: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
-      background: var(--light); color: var(--gray);
+    .event-meta { font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 4px; }
+    .event-route-name { font-size: 12px; color: var(--red); font-weight: 600; margin-top: 4px; }
+    .event-mini-map {
+      flex-shrink: 0; width: 140px; min-height: 120px;
+      background: var(--light); position: relative;
+    }
+    .event-mini-map .leaflet-container { width: 140px; height: 100%; min-height: 120px; }
+    .event-card-hint {
+      font-size: 11px; color: var(--gray); text-align: right;
+      padding: 6px 14px 8px; border-top: 1px solid var(--light);
     }
     .event-row-skeleton {
-      height: 72px; border-radius: 8px; background: var(--light);
-      margin-bottom: 8px;
+      height: 120px; border-radius: 12px; background: var(--light);
+      margin-bottom: 16px;
     }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
     .skeleton-pulse { animation: pulse 1.4s ease-in-out infinite; }
     .rwgps-empty, .rwgps-error { font-size: 14px; color: var(--gray); padding: 24px 0; }
     .rwgps-error { color: #c0392b; }
-    .event-route { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 3px; }
-    .event-route a { color: var(--red); text-decoration: none; }
-    .event-route a:hover { text-decoration: underline; }
+
+    /* ── Event modal ── */
+    .ev-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      z-index: 9000; align-items: center; justify-content: center; padding: 20px;
+    }
+    .ev-modal-overlay.open { display: flex; }
+    .ev-modal {
+      background: #fff; border-radius: 16px; width: 100%; max-width: 720px;
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .ev-modal-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 24px 28px 16px; border-bottom: 1px solid var(--light);
+    }
+    .ev-modal-title {
+      font-family: var(--font-display); font-size: 22px; font-weight: 800;
+      text-transform: uppercase; color: var(--black); line-height: 1.2;
+    }
+    .ev-modal-date { font-size: 13px; color: var(--gray); margin-top: 4px; }
+    .ev-modal-close {
+      flex-shrink: 0; background: none; border: none; cursor: pointer;
+      font-size: 24px; line-height: 1; color: var(--gray); padding: 4px;
+      margin-left: 16px;
+    }
+    .ev-modal-close:hover { color: var(--black); }
+    .ev-modal-stats {
+      display: flex; gap: 24px; flex-wrap: wrap;
+      padding: 16px 28px; background: var(--light);
+    }
+    .ev-modal-stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray); }
+    .ev-modal-stat-val { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--black); }
+    .ev-modal-map { height: 320px; }
+    .ev-modal-map .leaflet-container { height: 320px; }
+    .ev-modal-elev { padding: 20px 28px 8px; }
+    .ev-modal-elev-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray); margin-bottom: 10px; }
+    .ev-modal-desc { padding: 16px 28px 24px; font-size: 14px; color: var(--gray); line-height: 1.6; }
+    .ev-modal-location { padding: 0 28px 20px; font-size: 13px; color: var(--gray); }
+    .ev-modal-location strong { color: var(--black); }
   </style>
 </head>
 <body data-page="rides">
@@ -261,59 +307,244 @@
 
 <div data-component="footer"></div>
 
-<script type="module">
-  import { getEvents, getEvent, showLoading, showError, formatDateBox, formatDistance, formatElevation, rwgpsEventUrl, rwgpsRouteUrl } from './js/rwgps.js';
+<!-- Modal -->
+<div class="ev-modal-overlay" id="ev-modal-overlay">
+  <div class="ev-modal" id="ev-modal">
+    <div class="ev-modal-header">
+      <div>
+        <div class="ev-modal-title" id="ev-modal-title"></div>
+        <div class="ev-modal-date" id="ev-modal-date"></div>
+      </div>
+      <button class="ev-modal-close" id="ev-modal-close" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="ev-modal-stats" id="ev-modal-stats"></div>
+    <div class="ev-modal-location" id="ev-modal-location"></div>
+    <div class="ev-modal-map" id="ev-modal-map"></div>
+    <div class="ev-modal-elev" id="ev-modal-elev-wrap">
+      <div class="ev-modal-elev-title">Elevation profile</div>
+      <canvas id="ev-modal-elev-chart" height="100"></canvas>
+    </div>
+    <div class="ev-modal-desc" id="ev-modal-desc"></div>
+  </div>
+</div>
 
+<script type="module">
+  import { getEvents, getEvent, getRoute, showLoading, showError, formatDateBox, formatDistance, formatElevation } from './js/rwgps.js';
+
+  const escHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  // ── Decimation: keep every Nth point for performance ──
+  function decimate(pts, maxPts = 300) {
+    if (pts.length <= maxPts) return pts;
+    const step = Math.ceil(pts.length / maxPts);
+    return pts.filter((_, i) => i % step === 0);
+  }
+
+  // ── Mini map ──
+  function renderMiniMap(containerId, trackPoints, color = '#D0021B') {
+    const el = document.getElementById(containerId);
+    if (!el || !trackPoints || !trackPoints.length) return;
+    const pts = decimate(trackPoints, 200).map(p => [p.y, p.x]);
+    const map = L.map(el, { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    const poly = L.polyline(pts, { color, weight: 2.5, opacity: 0.9 }).addTo(map);
+    map.fitBounds(poly.getBounds(), { padding: [6, 6] });
+    return map;
+  }
+
+  // ── Modal ──
+  let modalMap = null;
+  let elevChart = null;
+
+  function openModal(eventData, routeData) {
+    const { event, route, trackPoints } = eventData;
+    const overlay = document.getElementById('ev-modal-overlay');
+
+    // Header
+    document.getElementById('ev-modal-title').textContent = event.name;
+    const dateStr = new Date(event.start_date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('ev-modal-date').textContent = event.start_time ? `${dateStr} · ${event.start_time.slice(0,5)}` : dateStr;
+
+    // Stats
+    const dist  = route && route.distance     ? formatDistance(route.distance) : null;
+    const elev  = route && route.elevation_gain ? formatElevation(route.elevation_gain) : null;
+    const diff  = route && route.difficulty    ? route.difficulty.charAt(0).toUpperCase() + route.difficulty.slice(1) : null;
+    const terrain = route && route.terrain     ? route.terrain.charAt(0).toUpperCase() + route.terrain.slice(1) : null;
+    const stats = [
+      dist   ? { label: 'Distance',   val: dist }     : null,
+      elev   ? { label: 'Elevation',  val: `↑ ${elev}` } : null,
+      diff   ? { label: 'Difficulty', val: diff }     : null,
+      terrain? { label: 'Terrain',    val: terrain }  : null,
+    ].filter(Boolean);
+    document.getElementById('ev-modal-stats').innerHTML = stats.map(s =>
+      `<div><div class="ev-modal-stat-label">${s.label}</div><div class="ev-modal-stat-val">${escHtml(s.val)}</div></div>`
+    ).join('');
+
+    // Location
+    const locEl = document.getElementById('ev-modal-location');
+    locEl.innerHTML = event.location ? `<strong>Meeting point:</strong> ${escHtml(event.location)}` : '';
+
+    // Description
+    const descEl = document.getElementById('ev-modal-desc');
+    descEl.textContent = event.description || (route && route.description) || '';
+    descEl.style.display = descEl.textContent ? 'block' : 'none';
+
+    overlay.classList.add('open');
+
+    // Map — destroy previous instance
+    const mapEl = document.getElementById('ev-modal-map');
+    if (modalMap) { modalMap.remove(); modalMap = null; }
+    mapEl.innerHTML = '';
+    if (trackPoints && trackPoints.length) {
+      const pts = decimate(trackPoints, 400).map(p => [p.y, p.x]);
+      modalMap = L.map(mapEl, { zoomControl: true, attributionControl: true });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+      }).addTo(modalMap);
+      // Start marker
+      const startPt = trackPoints[0];
+      L.circleMarker([startPt.y, startPt.x], { radius: 7, color: '#fff', fillColor: '#22c55e', fillOpacity: 1, weight: 2 })
+        .bindTooltip('Start').addTo(modalMap);
+      const poly = L.polyline(pts, { color: '#D0021B', weight: 3, opacity: 0.9 }).addTo(modalMap);
+      modalMap.fitBounds(poly.getBounds(), { padding: [20, 20] });
+    } else {
+      // Fallback: centre on event lat/lng if available
+      if (event.lat && event.lng) {
+        modalMap = L.map(mapEl, { zoomControl: true, attributionControl: true }).setView([event.lat, event.lng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+        }).addTo(modalMap);
+        L.marker([event.lat, event.lng]).addTo(modalMap);
+      } else {
+        mapEl.innerHTML = '<p style="padding:20px;color:var(--gray);text-align:center">No route map available</p>';
+      }
+    }
+
+    // Elevation chart
+    const elevWrap = document.getElementById('ev-modal-elev-wrap');
+    if (elevChart) { elevChart.destroy(); elevChart = null; }
+    if (trackPoints && trackPoints.length) {
+      elevWrap.style.display = 'block';
+      const sampled = decimate(trackPoints, 400);
+      const labels  = sampled.map(p => (p.d / 1000).toFixed(1));
+      const elevFt  = sampled.map(p => Math.round(p.e * 3.28084));
+      const ctx     = document.getElementById('ev-modal-elev-chart').getContext('2d');
+      elevChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: elevFt,
+            borderColor: '#D0021B',
+            backgroundColor: 'rgba(208,2,27,0.1)',
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: true,
+            tension: 0.3,
+          }]
+        },
+        options: {
+          animation: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { maxTicksLimit: 8, font: { size: 11 } }, title: { display: true, text: 'Distance (km)', font: { size: 11 } } },
+            y: { ticks: { font: { size: 11 } }, title: { display: true, text: 'Elevation (ft)', font: { size: 11 } } }
+          }
+        }
+      });
+    } else {
+      elevWrap.style.display = 'none';
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('ev-modal-overlay').classList.remove('open');
+  }
+
+  document.getElementById('ev-modal-close').addEventListener('click', closeModal);
+  document.getElementById('ev-modal-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── Main load ──
   const container = document.getElementById('upcoming-events');
   if (container) {
     showLoading(container, 3, 'event-row-skeleton');
 
     try {
       const { events = [] } = await getEvents();
-
-      // Filter to next 7 days using start_date string comparison (YYYY-MM-DD)
       const todayStr   = new Date().toISOString().slice(0, 10);
       const cutoffDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-      const upcoming = events.filter(e => {
+      const upcoming   = events.filter(e => {
         const d = e.start_date || (e.starts_at || '').slice(0, 10);
         return d >= todayStr && d <= cutoffDate;
       });
 
       if (!upcoming.length) {
         container.innerHTML = '<p class="rwgps-empty">No rides scheduled in the next seven days — check back soon.</p>';
-      } else {
-        // Fetch full event detail in parallel to get embedded routes[]
-        const details = await Promise.all(
-          upcoming.map(e => getEvent(e.id).catch(() => ({ event: e })))
-        );
-
-        const escHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        container.innerHTML = details.map(({ event }) => {
-          const { day, month } = formatDateBox(event.start_date || event.starts_at);
-          const time  = event.start_time ? event.start_time.slice(0, 5) : '';
-          const route = event.routes && event.routes[0];
-          const dist  = route && route.distance ? formatDistance(route.distance) : '';
-          const elev  = route && route.elevation_gain ? `↑ ${formatElevation(route.elevation_gain)}` : '';
-          const routeName = route ? route.name.trim() : '';
-          const meta  = [event.location, dist, elev].filter(Boolean).join(' · ');
-          const metaLine = [time, meta].filter(Boolean).join(' · ');
-          return `
-            <div class="event-row">
-              <div class="event-date-box">
-                <div class="event-date-day">${day}</div>
-                <div class="event-date-month">${month}</div>
-              </div>
-              <div class="event-body">
-                <div class="event-name">
-                  <a href="${rwgpsEventUrl(event.id)}" target="_blank" rel="noopener">${escHtml(event.name)}</a>
-                </div>
-                ${metaLine ? `<div class="event-meta">${escHtml(metaLine)}</div>` : ''}
-                ${routeName ? `<div class="event-route">Route: <a href="${rwgpsRouteUrl(route.id)}" target="_blank" rel="noopener">${escHtml(routeName)}</a></div>` : ''}
-              </div>
-              <span class="event-tag">Club ride</span>
-            </div>`;
-        }).join('');
+        return;
       }
+
+      // Fetch event details in parallel
+      const details = await Promise.all(
+        upcoming.map(e => getEvent(e.id).catch(() => ({ event: e })))
+      );
+
+      // Fetch first route detail (track points) for each event, in parallel
+      const routeDetails = await Promise.all(
+        details.map(({ event }) => {
+          const r = event.routes && event.routes[0];
+          return r ? getRoute(r.id).catch(() => null) : Promise.resolve(null);
+        })
+      );
+
+      // Build cards
+      container.innerHTML = '';
+      details.forEach(({ event }, i) => {
+        const routeMeta   = event.routes && event.routes[0];
+        const routeFull   = routeDetails[i] ? routeDetails[i].route : null;
+        const trackPoints = routeFull ? routeFull.track_points : null;
+
+        const { day, month } = formatDateBox(event.start_date || event.starts_at);
+        const time       = event.start_time ? event.start_time.slice(0, 5) : '';
+        const dist       = routeMeta && routeMeta.distance       ? formatDistance(routeMeta.distance) : '';
+        const elev       = routeMeta && routeMeta.elevation_gain ? `↑ ${formatElevation(routeMeta.elevation_gain)}` : '';
+        const routeName  = routeFull ? routeFull.name.trim() : (routeMeta ? routeMeta.name.trim() : '');
+        const metaParts  = [event.location, dist, elev].filter(Boolean);
+        const meta       = metaParts.join(' · ');
+        const metaLine   = [time, meta].filter(Boolean).join(' · ');
+        const miniMapId  = `mini-map-${event.id}`;
+
+        const card = document.createElement('div');
+        card.className = 'event-card';
+        card.innerHTML = `
+          <div class="event-card-inner">
+            <div class="event-date-box">
+              <div class="event-date-day">${day}</div>
+              <div class="event-date-month">${month}</div>
+            </div>
+            <div class="event-info">
+              <div class="event-name">${escHtml(event.name)}</div>
+              ${metaLine ? `<div class="event-meta">${escHtml(metaLine)}</div>` : ''}
+              ${routeName ? `<div class="event-route-name">${escHtml(routeName)}</div>` : ''}
+            </div>
+            ${trackPoints ? `<div class="event-mini-map" id="${miniMapId}"></div>` : ''}
+          </div>
+          <div class="event-card-hint">Tap for map &amp; elevation profile →</div>`;
+
+        card.addEventListener('click', () => openModal(
+          { event, route: routeFull || routeMeta, trackPoints },
+          routeFull
+        ));
+        container.appendChild(card);
+
+        // Render mini map after card is in DOM
+        if (trackPoints) {
+          requestAnimationFrame(() => renderMiniMap(miniMapId, trackPoints));
+        }
+      });
+
     } catch (err) {
       showError(container, 'Could not load upcoming rides. Please try again shortly.');
     }
