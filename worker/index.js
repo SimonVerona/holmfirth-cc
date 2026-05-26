@@ -132,7 +132,7 @@ async function handleRequest(request, env) {
     // page param passed through; ?page=1 etc.
     const page = url.searchParams.get('page') || '1';
     const res  = await rwgpsFetch(
-      `/clubs/${clubId}/events.json?page=${page}`,
+      `/events.json?page=${page}`,
       env, CACHE_TTL.events
     );
     return addCors(res, cors);

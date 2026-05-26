@@ -268,12 +268,12 @@
     try {
       const { events = [] } = await getEvents();
 
-      // Filter to next 7 days
-      const now   = Date.now();
-      const cutoff = now + 7 * 24 * 60 * 60 * 1000;
+      // Filter to next 7 days using start_date string comparison (YYYY-MM-DD)
+      const todayStr   = new Date().toISOString().slice(0, 10);
+      const cutoffDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
       const upcoming = events.filter(e => {
-        const t = new Date(e.starts_at || e.start_date).getTime();
-        return t >= now && t <= cutoff;
+        const d = e.start_date || (e.starts_at || '').slice(0, 10);
+        return d >= todayStr && d <= cutoffDate;
       });
 
       if (!upcoming.length) {
@@ -281,10 +281,12 @@
       } else {
         const escHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         container.innerHTML = upcoming.map(event => {
-          const { day, month } = formatDateBox(event.starts_at || event.start_date);
+          const { day, month } = formatDateBox(event.start_date || event.starts_at);
+          const time = event.start_time ? event.start_time.slice(0, 5) : '';
           const dist = event.distance ? formatDistance(event.distance) : '';
           const elev = event.elevation_gain ? `↑ ${formatElevation(event.elevation_gain)}` : '';
           const meta = [event.location, dist, elev].filter(Boolean).join(' · ');
+          const metaLine = [time, meta].filter(Boolean).join(' · ');
           return `
             <div class="event-row">
               <div class="event-date-box">
@@ -295,7 +297,7 @@
                 <div class="event-name">
                   <a href="${rwgpsEventUrl(event.id)}" target="_blank" rel="noopener">${escHtml(event.name)}</a>
                 </div>
-                ${meta ? `<div class="event-meta">${escHtml(meta)}</div>` : ''}
+                ${metaLine ? `<div class="event-meta">${escHtml(metaLine)}</div>` : ''}
               </div>
               <span class="event-tag">Club ride</span>
             </div>`;
