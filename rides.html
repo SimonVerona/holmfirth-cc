@@ -60,6 +60,9 @@
     .skeleton-pulse { animation: pulse 1.4s ease-in-out infinite; }
     .rwgps-empty, .rwgps-error { font-size: 14px; color: var(--gray); padding: 24px 0; }
     .rwgps-error { color: #c0392b; }
+    .event-route { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 3px; }
+    .event-route a { color: var(--red); text-decoration: none; }
+    .event-route a:hover { text-decoration: underline; }
   </style>
 </head>
 <body data-page="rides">
@@ -259,7 +262,7 @@
 <div data-component="footer"></div>
 
 <script type="module">
-  import { getEvents, showLoading, showError, formatDateBox, formatDistance, formatElevation, rwgpsEventUrl } from './js/rwgps.js';
+  import { getEvents, getEvent, showLoading, showError, formatDateBox, formatDistance, formatElevation, rwgpsEventUrl, rwgpsRouteUrl } from './js/rwgps.js';
 
   const container = document.getElementById('upcoming-events');
   if (container) {
@@ -279,13 +282,20 @@
       if (!upcoming.length) {
         container.innerHTML = '<p class="rwgps-empty">No rides scheduled in the next seven days — check back soon.</p>';
       } else {
+        // Fetch full event detail in parallel to get embedded routes[]
+        const details = await Promise.all(
+          upcoming.map(e => getEvent(e.id).catch(() => ({ event: e })))
+        );
+
         const escHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        container.innerHTML = upcoming.map(event => {
+        container.innerHTML = details.map(({ event }) => {
           const { day, month } = formatDateBox(event.start_date || event.starts_at);
-          const time = event.start_time ? event.start_time.slice(0, 5) : '';
-          const dist = event.distance ? formatDistance(event.distance) : '';
-          const elev = event.elevation_gain ? `↑ ${formatElevation(event.elevation_gain)}` : '';
-          const meta = [event.location, dist, elev].filter(Boolean).join(' · ');
+          const time  = event.start_time ? event.start_time.slice(0, 5) : '';
+          const route = event.routes && event.routes[0];
+          const dist  = route && route.distance ? formatDistance(route.distance) : '';
+          const elev  = route && route.elevation_gain ? `↑ ${formatElevation(route.elevation_gain)}` : '';
+          const routeName = route ? route.name.trim() : '';
+          const meta  = [event.location, dist, elev].filter(Boolean).join(' · ');
           const metaLine = [time, meta].filter(Boolean).join(' · ');
           return `
             <div class="event-row">
@@ -298,6 +308,7 @@
                   <a href="${rwgpsEventUrl(event.id)}" target="_blank" rel="noopener">${escHtml(event.name)}</a>
                 </div>
                 ${metaLine ? `<div class="event-meta">${escHtml(metaLine)}</div>` : ''}
+                ${routeName ? `<div class="event-route">Route: <a href="${rwgpsRouteUrl(route.id)}" target="_blank" rel="noopener">${escHtml(routeName)}</a></div>` : ''}
               </div>
               <span class="event-tag">Club ride</span>
             </div>`;
