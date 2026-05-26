@@ -206,11 +206,20 @@ async function handleRequest(request, env) {
   };
   if (cleanUrls[path]) {
     const rewritten = new Request(new URL(cleanUrls[path], request.url).toString(), request);
-    return env.ASSETS.fetch(rewritten);
+    return noStoreHtml(await env.ASSETS.fetch(rewritten));
   }
 
   // Fall through to static assets for all other routes
-  return env.ASSETS.fetch(request);
+  return noStoreHtml(await env.ASSETS.fetch(request));
+}
+
+// Strip Cloudflare edge caching from HTML responses
+function noStoreHtml(response) {
+  const ct = response.headers.get('Content-Type') || '';
+  if (!ct.includes('text/html')) return response;
+  const headers = new Headers(response.headers);
+  headers.set('Cache-Control', 'no-store, must-revalidate');
+  return new Response(response.body, { status: response.status, headers });
 }
 
 function addCors(response, cors) {
