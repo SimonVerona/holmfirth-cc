@@ -112,7 +112,7 @@ export function formatDateBox(isoString) {
  */
 export function formatDistance(metres) {
   if (!metres) return '';
-  return `${(metres / 1000).toFixed(1)} km`;
+  return `${(metres / 1609.344).toFixed(1)} mi`;
 }
 
 /**
@@ -120,7 +120,7 @@ export function formatDistance(metres) {
  */
 export function formatElevation(metres) {
   if (!metres) return '';
-  return `${Math.round(metres).toLocaleString('en-GB')} m`;
+  return `${Math.round(metres * 3.28084).toLocaleString('en-GB')} ft`;
 }
 
 /**
