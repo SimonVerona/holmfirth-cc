@@ -8,7 +8,7 @@
  *   RWGPS_CLUB_ID      — your club ID on RWGPS (numeric)
  *
  * Routes handled (all under /api/):
- *   GET /api/events          — upcoming club events
+ *   GET /api/events          — upcoming club events (all pages, future only)
  *   GET /api/events/:id      — single event detail (with description + routes)
  *   GET /api/routes          — club route library
  *   GET /api/routes/:id      — single route detail
@@ -36,7 +36,6 @@ const CACHE_TTL = {
 };
 
 // ─── CORS headers ────────────────────────────────────────────────────────────
-// Locked to your own domain in production; expand as needed.
 function corsHeaders(origin) {
   const allowed = [
     'https://www.holmfirth.cc',
@@ -56,19 +55,18 @@ function corsHeaders(origin) {
 // ─── Auth headers for RWGPS ──────────────────────────────────────────────────
 function rwgpsAuth(env) {
   return {
-    'x-rwgps-api-key':   env.RWGPS_API_KEY,
+    'x-rwgps-api-key':    env.RWGPS_API_KEY,
     'x-rwgps-auth-token': env.RWGPS_AUTH_TOKEN,
     'Accept': 'application/json',
   };
 }
 
-// ─── Fetch from RWGPS with Cloudflare cache ──────────────────────────────────
+// ─── Fetch a single page from RWGPS with Cloudflare edge cache ───────────────
 async function rwgpsFetch(path, env, ttl) {
-  const url = `${RWGPS_BASE}${path}`;
+  const url      = `${RWGPS_BASE}${path}`;
   const cacheKey = new Request(url, { method: 'GET' });
   const cache    = caches.default;
 
-  // Try Cloudflare edge cache first
   let cached = await cache.match(cacheKey);
   if (cached) {
     return new Response(cached.body, {
@@ -76,7 +74,6 @@ async function rwgpsFetch(path, env, ttl) {
     });
   }
 
-  // Forward to RWGPS
   const upstream = await fetch(url, { headers: rwgpsAuth(env) });
 
   if (!upstream.ok) {
@@ -88,29 +85,65 @@ async function rwgpsFetch(path, env, ttl) {
 
   const body = await upstream.text();
 
-  // Store in edge cache
   const responseToCache = new Response(body, {
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type':  'application/json',
       'Cache-Control': `public, max-age=${ttl}`,
-      'X-Cache': 'MISS',
+      'X-Cache':       'MISS',
     },
   });
   await cache.put(cacheKey, responseToCache.clone());
 
   return new Response(body, {
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type':  'application/json',
       'Cache-Control': `public, max-age=${ttl}`,
-      'X-Cache': 'MISS',
+      'X-Cache':       'MISS',
     },
   });
+}
+
+// ─── Fetch all upcoming events across all pages ───────────────────────────────
+// RWGPS returns events in descending order (most recent first) and mixes past
+// and future events on page 1.  We paginate all pages and return only future
+// events so the client-side 7-day filter has the full picture.
+async function fetchAllUpcomingEvents(env) {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  let page = 1;
+  let allEvents = [];
+
+  while (true) {
+    const res  = await rwgpsFetch(`/events.json?page=${page}`, env, CACHE_TTL.events);
+    const data = await res.json();
+    const events = data.events || [];
+
+    // Accumulate events on or after today
+    const upcoming = events.filter(e => {
+      const d = e.start_date || (e.starts_at || '').slice(0, 10);
+      return d >= today;
+    });
+    allEvents = allEvents.concat(upcoming);
+
+    // Stop if no next page, or safety cap
+    if (!data.meta?.pagination?.next_page_url) break;
+    if (page >= 10) break;
+    page++;
+  }
+
+  // Sort ascending by start date
+  allEvents.sort((a, b) => {
+    const da = a.start_date || (a.starts_at || '').slice(0, 10);
+    const db = b.start_date || (b.starts_at || '').slice(0, 10);
+    return da.localeCompare(db);
+  });
+
+  return allEvents;
 }
 
 // ─── Route dispatcher ────────────────────────────────────────────────────────
 async function handleRequest(request, env) {
   const url    = new URL(request.url);
-  const path   = url.pathname;           // e.g. /api/events
+  const path   = url.pathname;
   const origin = request.headers.get('Origin') || '';
   const cors   = corsHeaders(origin);
   const clubId = env.RWGPS_CLUB_ID;
@@ -128,14 +161,13 @@ async function handleRequest(request, env) {
   }
 
   // ── /api/events ─────────────────────────────────────────
+  // Fetch all pages from RWGPS and return only upcoming events, sorted asc.
   if (path === '/api/events') {
-    // page param passed through; ?page=1 etc.
-    const page = url.searchParams.get('page') || '1';
-    const res  = await rwgpsFetch(
-      `/events.json?page=${page}`,
-      env, CACHE_TTL.events
+    const events = await fetchAllUpcomingEvents(env);
+    return new Response(
+      JSON.stringify({ events, meta: { source: 'holmfirth-cc-worker' } }),
+      { headers: { ...cors, 'Content-Type': 'application/json' } }
     );
-    return addCors(res, cors);
   }
 
   // ── /api/events/:id ─────────────────────────────────────
@@ -169,7 +201,6 @@ async function handleRequest(request, env) {
   }
 
   // ── /api/trips ──────────────────────────────────────────
-  // Trips = completed ride writeups. Fetched for the club user account.
   if (path === '/api/trips') {
     const page = url.searchParams.get('page') || '1';
     const res  = await rwgpsFetch(
