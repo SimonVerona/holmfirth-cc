@@ -109,6 +109,99 @@
     .ev-modal-desc { padding: 16px 28px 24px; font-size: 14px; color: var(--gray); line-height: 1.6; }
     .ev-modal-location { padding: 0 28px 20px; font-size: 13px; color: var(--gray); }
     .ev-modal-location strong { color: var(--black); }
+  
+    /* ── Trial signup section (inside event modal) ── */
+    .trial-signup-section {
+      border-top: 2px solid var(--red);
+      margin: 0 28px 24px;
+      padding-top: 20px;
+    }
+    .trial-signup-title {
+      font-family: var(--font-display); font-size: 16px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--black);
+      margin-bottom: 4px;
+    }
+    .trial-signup-subtitle {
+      font-size: 13px; color: var(--gray); margin-bottom: 16px; line-height: 1.5;
+    }
+    .trial-signup-fields {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;
+    }
+    .trial-signup-fields-full {
+      margin-bottom: 12px;
+    }
+    .trial-field label {
+      display: block; font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); margin-bottom: 6px;
+    }
+    .trial-field input {
+      width: 100%; border: 1px solid #ddd; padding: 10px 12px;
+      font-family: var(--font-body); font-size: 14px; border-radius: 6px;
+      outline: none; transition: border-color 0.15s; color: var(--black);
+    }
+    .trial-field input:focus { border-color: var(--red); }
+    .trial-field input::placeholder { color: #aaa; }
+    .trial-field input.input-error { border-color: #e74c3c; }
+    .trial-signup-error {
+      display: none; background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.3);
+      color: #c0392b; font-size: 13px; padding: 10px 14px; border-radius: 6px;
+      margin-bottom: 12px; line-height: 1.4;
+    }
+    .trial-signup-error.visible { display: block; }
+    .btn-trial-signup {
+      width: 100%; background: var(--red); color: white; border: none; cursor: pointer;
+      font-family: var(--font-display); font-weight: 800; font-size: 15px;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 24px;
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      gap: 10px; transition: background 0.15s;
+    }
+    .btn-trial-signup:hover { background: #b0011a; }
+    .btn-trial-signup:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-trial-signup .ts-spinner {
+      display: none; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+      border-radius: 50%; animation: ts-spin 0.6s linear infinite; flex-shrink: 0;
+    }
+    .btn-trial-signup.loading .ts-spinner { display: block; }
+    .btn-trial-signup.loading .ts-label { opacity: 0.7; }
+    @keyframes ts-spin { to { transform: rotate(360deg); } }
+
+    /* ── Thank-you dialog ── */
+    .thankyou-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+      z-index: 10000; align-items: center; justify-content: center; padding: 20px;
+    }
+    .thankyou-overlay.open { display: flex; }
+    .thankyou-card {
+      background: white; border-radius: 16px; width: 100%; max-width: 460px;
+      padding: 40px 36px; text-align: center;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+      border-top: 4px solid var(--red);
+    }
+    .thankyou-icon { font-size: 3rem; margin-bottom: 16px; line-height: 1; }
+    .thankyou-title {
+      font-family: var(--font-display); font-size: 26px; font-weight: 800;
+      text-transform: uppercase; color: var(--black); margin-bottom: 10px;
+    }
+    .thankyou-body {
+      font-size: 15px; color: var(--gray); line-height: 1.65; margin-bottom: 28px;
+    }
+    .thankyou-ride {
+      background: var(--light); border-radius: 8px; padding: 14px 18px;
+      font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 28px;
+    }
+    .btn-thankyou-close {
+      background: var(--black); color: white; border: none; cursor: pointer;
+      font-family: var(--font-display); font-weight: 800; font-size: 14px;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 32px;
+      border-radius: 6px; transition: background 0.15s;
+    }
+    .btn-thankyou-close:hover { background: var(--red); }
+
+    @media (max-width: 500px) {
+      .trial-signup-fields { grid-template-columns: 1fr; }
+      .thankyou-card { padding: 28px 20px; }
+    }
   </style>
 </head>
 <body data-page="rides">
@@ -325,6 +418,31 @@
       <canvas id="ev-modal-elev-chart" height="100"></canvas>
     </div>
     <div class="ev-modal-desc" id="ev-modal-desc"></div>
+    <div class="trial-signup-section" id="trial-signup-section">
+      <div class="trial-signup-title">Join this ride</div>
+      <p class="trial-signup-subtitle">
+        Not a member yet? Sign up below and we'll expect you. No commitment — you can come on up to two rides for free.
+      </p>
+      <div class="trial-signup-error" id="trial-signup-error"></div>
+      <div class="trial-signup-fields">
+        <div class="trial-field">
+          <label for="trial-first-name">First name</label>
+          <input type="text" id="trial-first-name" placeholder="e.g. Dave" autocomplete="given-name">
+        </div>
+        <div class="trial-field">
+          <label for="trial-last-name">Last name</label>
+          <input type="text" id="trial-last-name" placeholder="e.g. Smith" autocomplete="family-name">
+        </div>
+      </div>
+      <div class="trial-signup-fields-full trial-field">
+        <label for="trial-email">Email address</label>
+        <input type="email" id="trial-email" placeholder="you@example.com" autocomplete="email" inputmode="email">
+      </div>
+      <button class="btn-trial-signup" id="btn-trial-signup" type="button">
+        <span class="ts-spinner"></span>
+        <span class="ts-label">Sign me up for this ride</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -535,7 +653,14 @@
             </div>
             ${trackPoints ? `<div class="event-mini-map" id="${miniMapId}"></div>` : ''}
           </div>
-          <div class="event-card-hint">Tap for map &amp; elevation profile →</div>`;
+          <div class="event-card-hint" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <span>Tap for map &amp; elevation profile →</span>
+            <button class="btn-join-ride" data-event-id="\${event.id}" data-event-name="\${escHtml(event.name)}"
+              style="background:var(--red);color:white;border:none;cursor:pointer;font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:6px 14px;border-radius:4px;white-space:nowrap;transition:background 0.15s;"
+              onmouseover="this.style.background='#b0011a'" onmouseout="this.style.background='var(--red)'">
+              Come on this ride →
+            </button>
+          </div>`;
 
         card.addEventListener('click', () => openModal(
           { event, route: routeFull || routeMeta, trackPoints },
@@ -554,6 +679,124 @@
     }
   }
   })();
+
+
+  // ── Trial Ride Signup ──
+  let currentEventForSignup = { id: null, name: '' };
+
+  // When a "Come on this ride" button is clicked on a card
+  document.getElementById('upcoming-events').addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-join-ride');
+    if (!btn) return;
+    e.stopPropagation();
+    const eventId   = btn.dataset.eventId;
+    const eventName = btn.dataset.eventName;
+    // Find the card and trigger the modal open via its click handler
+    // (the card click handler already opens the modal)
+    btn.closest('.event-card').click();
+    // Give the modal a tick to render, then scroll to the signup form
+    setTimeout(() => {
+      document.getElementById('trial-signup-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 120);
+  });
+
+  // Track which event is currently open in the modal
+  const _origOpenModal = openModal;
+  // We wrap openModal to capture the current event
+  // We store the event name on the modal itself instead of replacing openModal
+  document.getElementById('ev-modal-overlay').addEventListener('click', function() {
+    // Reset form on close via backdrop
+    resetTrialForm();
+  });
+
+  function resetTrialForm() {
+    document.getElementById('trial-first-name').value = '';
+    document.getElementById('trial-last-name').value  = '';
+    document.getElementById('trial-email').value      = '';
+    document.getElementById('trial-signup-error').classList.remove('visible');
+    const btn = document.getElementById('btn-trial-signup');
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    ['trial-first-name','trial-last-name','trial-email'].forEach(id => {
+      document.getElementById(id)?.classList.remove('input-error');
+    });
+  }
+
+  document.getElementById('ev-modal-close').addEventListener('click', resetTrialForm);
+
+  document.getElementById('btn-trial-signup').addEventListener('click', async function() {
+    const firstName = document.getElementById('trial-first-name').value.trim();
+    const lastName  = document.getElementById('trial-last-name').value.trim();
+    const email     = document.getElementById('trial-email').value.trim();
+    const errorEl   = document.getElementById('trial-signup-error');
+
+    // Clear previous errors
+    errorEl.classList.remove('visible');
+    ['trial-first-name','trial-last-name','trial-email'].forEach(id => {
+      document.getElementById(id).classList.remove('input-error');
+    });
+
+    // Validate
+    let valid = true;
+    if (!firstName) { document.getElementById('trial-first-name').classList.add('input-error'); valid = false; }
+    if (!lastName)  { document.getElementById('trial-last-name').classList.add('input-error');  valid = false; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      document.getElementById('trial-email').classList.add('input-error'); valid = false;
+    }
+    if (!valid) {
+      errorEl.textContent = 'Please fill in all fields with a valid email address.';
+      errorEl.classList.add('visible');
+      return;
+    }
+
+    const btn = document.getElementById('btn-trial-signup');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    // Get current event name from modal title
+    const eventName = document.getElementById('ev-modal-title').textContent || '';
+    // We don't have the event ID easily here — pass name only, that's enough for audit
+    try {
+      const res = await fetch('https://members.holmfirth.cc/api/trial/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: firstName,
+          last_name:  lastName,
+          email:      email,
+          event_name: eventName,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok && !data.ok) {
+        throw new Error(data.error || 'Sign-up failed. Please try again.');
+      }
+
+      // Success — close modal, show thank-you
+      closeModal();
+      resetTrialForm();
+      document.getElementById('thankyou-ride-name').textContent = eventName || 'your chosen ride';
+      document.getElementById('thankyou-overlay').classList.add('open');
+
+    } catch (err) {
+      errorEl.textContent = err.message || 'Something went wrong. Please try again.';
+      errorEl.classList.add('visible');
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  });
+
+  // Thank-you close
+  document.getElementById('btn-thankyou-close').addEventListener('click', function() {
+    document.getElementById('thankyou-overlay').classList.remove('open');
+  });
+  document.getElementById('thankyou-overlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+
+
 </script>
 <script src="/js/components.js"></script>
 <script type="module" src="/js/main.js"></script>
@@ -565,6 +808,22 @@
       });
     }
   </script>
+
+<!-- Thank-you dialog -->
+<div class="thankyou-overlay" id="thankyou-overlay">
+  <div class="thankyou-card">
+    <div class="thankyou-icon">🚴</div>
+    <div class="thankyou-title">See you out there!</div>
+    <p class="thankyou-body">
+      Thanks for signing up for a trial ride. We're looking forward to seeing you.
+      <br><br>
+      Non-members are welcome for up to two rides — just look out for the group leader on the day.
+    </p>
+    <div class="thankyou-ride" id="thankyou-ride-name"></div>
+    <button class="btn-thankyou-close" id="btn-thankyou-close">Got it, see you soon!</button>
+  </div>
+</div>
+
 </body>
 </html>
 
