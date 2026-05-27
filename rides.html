@@ -56,7 +56,6 @@
     .event-mini-map {
       flex-shrink: 0; width: 140px; min-height: 120px;
       background: var(--light); position: relative;
-      isolation: isolate; z-index: 0;
     }
     .event-mini-map .leaflet-container { width: 140px; height: 100%; min-height: 120px; }
     .event-card-hint {
@@ -391,7 +390,7 @@
       <div style="font-family: var(--font-display); font-size: 32px; font-weight: 800; text-transform: uppercase; color: white; margin-bottom: 10px;">Try a Ride</div>
       <p style="color: rgba(255,255,255,0.55); font-weight: 300; font-size: 15px; margin-bottom: 28px;">Non-members welcome for two trial rides. Contact us first so we can expect you.</p>
       <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-        <a href="#upcoming-events" class="btn btn-red btn-arrow">See rides this week</a>
+        <a href="#rides-this-week" class="btn btn-red btn-arrow">See rides this week</a>
         <a href="/join" class="btn btn-outline">Join the club →</a>
       </div>
     </div>
