@@ -103,37 +103,40 @@ async function rwgpsFetch(path, env, ttl) {
   });
 }
 
-// ─── Fetch all upcoming events across all pages ───────────────────────────────
-// RWGPS returns events in descending order (most recent first) and mixes past
-// and future events on page 1.  We paginate all pages and return only future
-// events so the client-side 7-day filter has the full picture.
+// ─── Fetch all upcoming events across all RWGPS pages ────────────────────────
+// RWGPS returns events in an unpredictable mix of past/future, so we fetch all
+// pages and filter client-side.  We pass events through if we cannot determine
+// their date (defensive: let the client filter handle it) rather than silently
+// dropping them.
 async function fetchAllUpcomingEvents(env) {
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD UTC
   let page = 1;
   let allEvents = [];
 
   while (true) {
-    const res  = await rwgpsFetch(`/events.json?page=${page}`, env, CACHE_TTL.events);
+    const res  = await rwgpsFetch(`/events.json?page=${page}&page_size=50`, env, CACHE_TTL.events);
     const data = await res.json();
     const events = data.events || [];
 
-    // Accumulate events on or after today
+    // Keep events on/after today; if date is indeterminate, keep the event
+    // (the client-side filter in rides.html will handle it).
     const upcoming = events.filter(e => {
-      const d = e.start_date || (e.starts_at || '').slice(0, 10);
+      const d = e.start_date || (e.starts_at ? e.starts_at.slice(0, 10) : null);
+      if (!d) return true;          // unknown date → pass through
       return d >= today;
     });
     allEvents = allEvents.concat(upcoming);
 
-    // Stop if no next page, or safety cap
+    // Stop if RWGPS has no further pages, or safety cap
     if (!data.meta?.pagination?.next_page_url) break;
     if (page >= 10) break;
     page++;
   }
 
-  // Sort ascending by start date
+  // Sort ascending by start date (undated events go to the end)
   allEvents.sort((a, b) => {
-    const da = a.start_date || (a.starts_at || '').slice(0, 10);
-    const db = b.start_date || (b.starts_at || '').slice(0, 10);
+    const da = a.start_date || (a.starts_at ? a.starts_at.slice(0, 10) : 'zzzz');
+    const db = b.start_date || (b.starts_at ? b.starts_at.slice(0, 10) : 'zzzz');
     return da.localeCompare(db);
   });
 
@@ -161,7 +164,6 @@ async function handleRequest(request, env) {
   }
 
   // ── /api/events ─────────────────────────────────────────
-  // Fetch all pages from RWGPS and return only upcoming events, sorted asc.
   if (path === '/api/events') {
     const events = await fetchAllUpcomingEvents(env);
     return new Response(
