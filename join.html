@@ -399,6 +399,7 @@
       if (!res.ok) return showErr(data.error || 'Something went wrong. Please try again.');
 
       flowId = data.billing_request_flow_id;
+      memberId = data.member_id;
       const type = membershipTypes.find(t => t.id === selectedTypeId);
       if (type) {
         document.getElementById('jwAmountText').textContent =
@@ -413,7 +414,8 @@
     }
   };
 
-  let flowId = null;
+  let flowId    = null;
+  let memberId  = null;
 
   window.jwLaunchDropin = function() {
     if (!flowId) return;
@@ -425,7 +427,14 @@
       billingRequestFlowID: flowId,
       environment: 'live',
       onSuccess: function() {
-        // Mandate authorised — show pending confirmation
+        // Mandate authorised — flip member to pending then show confirmation
+        if (memberId) {
+          fetch(`${MEMBERS_API}/api/gocardless/mandate-started`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ member_id: memberId }),
+          }).catch(function(e) { console.warn('mandate-started call failed:', e); });
+        }
         document.getElementById('jwProgress').style.display = 'none';
         jwShowStage(3);
         document.getElementById('jwPendingBanner').style.display = 'block';
