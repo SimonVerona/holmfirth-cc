@@ -275,7 +275,7 @@
   }
   .jw-mem-card:hover { border-color:#aaa; }
   .jw-mem-card.selected { border-color:#D0021B; background:#fff8f8; }
-  .jw-mem-card input { display:none; }
+  .jw-mem-card input { position:absolute; opacity:0; width:0; height:0; }
   .jw-mem-label { font-family:'Barlow Condensed',sans-serif; font-size:0.95rem;
     font-weight:700; text-transform:uppercase; letter-spacing:0.04em; }
   .jw-mem-price { font-family:'Barlow Condensed',sans-serif; font-size:1.1rem;
@@ -350,12 +350,11 @@
         <div class="jw-mem-desc">${esc(t.description)}</div>
       </label>
     `).join('');
-    c.querySelectorAll('.jw-mem-card').forEach(card => {
-      card.addEventListener('click', () => {
-        c.querySelectorAll('.jw-mem-card').forEach(c2 => c2.classList.remove('selected'));
-        card.classList.add('selected');
-        selectedTypeId = card.dataset.id;
-        card.querySelector('input').checked = true;
+    // Highlight selected card on radio change (browsers handle the checked state natively)
+    c.querySelectorAll('input[name="jwType"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        c.querySelectorAll('.jw-mem-card').forEach(card => card.classList.remove('selected'));
+        radio.closest('.jw-mem-card').classList.add('selected');
       });
     });
   }
@@ -376,7 +375,9 @@
     if (!lastName)                       return showErr('Last name is required');
     if (!email.match(/^\S+@\S+\.\S+$/)) return showErr('Enter a valid email address');
     if (!mobile)                         return showErr('Mobile number is required');
-    if (!selectedTypeId)                 return showErr('Please select a membership type');
+    const checkedType = document.querySelector('input[name="jwType"]:checked');
+    if (!checkedType)                    return showErr('Please select a membership type');
+    selectedTypeId = checkedType.value;
     if (password.length < 8)             return showErr('Password must be at least 8 characters');
     if (password !== confirm)            return showErr('Passwords do not match');
 
