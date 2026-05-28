@@ -16,6 +16,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="HCC">
   <link rel="stylesheet" href="/css/style.css">
+  <script src="https://pay.gocardless.com/billing/static/dropin/v2/initialise.js"></script>
   <style>
     [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
     [data-reveal].revealed { opacity: 1; transform: none; }
@@ -222,7 +223,7 @@
           Your first payment is collected after your mandate is confirmed.
           Renewals are collected automatically on 15 March each year.
         </p>
-        <button class="btn btn-red btn-lg" id="jwGcBtn" onclick="jwGoToGC()"
+        <button class="btn btn-red btn-lg" id="jwGcBtn" onclick="jwLaunchDropin()"
           style="width:100%; justify-content:center;">
           Authorise Direct Debit →
         </button>
@@ -304,7 +305,6 @@
   const MEMBERS_API = 'https://members.holmfirth.cc';
   let membershipTypes = [];
   let selectedTypeId  = null;
-  let authorisationUrl = null;
 
   window.openJoinWizard = function() {
     const modal = document.getElementById('joinModal');
@@ -398,7 +398,7 @@
       const data = await res.json();
       if (!res.ok) return showErr(data.error || 'Something went wrong. Please try again.');
 
-      authorisationUrl = data.authorisation_url;
+      flowId = data.billing_request_flow_id;
       const type = membershipTypes.find(t => t.id === selectedTypeId);
       if (type) {
         document.getElementById('jwAmountText').textContent =
@@ -413,8 +413,29 @@
     }
   };
 
-  window.jwGoToGC = function() {
-    if (authorisationUrl) window.location.href = authorisationUrl;
+  let flowId = null;
+
+  window.jwLaunchDropin = function() {
+    if (!flowId) return;
+    const btn = document.getElementById('jwGcBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="jw-spinner"></span> Opening&hellip;';
+
+    window.GoCardlessDropin.create({
+      billingRequestFlowID: flowId,
+      environment: 'live',
+      onSuccess: function() {
+        // Mandate authorised — show pending confirmation
+        document.getElementById('jwProgress').style.display = 'none';
+        jwShowStage(3);
+        document.getElementById('jwPendingBanner').style.display = 'block';
+      },
+      onExit: function(err) {
+        btn.disabled = false;
+        btn.innerHTML = 'Authorise Direct Debit →';
+        if (err) console.warn('Drop-in exit:', err);
+      },
+    }).open();
   };
 
   window.jwShowStage = function(n) {
