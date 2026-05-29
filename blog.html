@@ -163,6 +163,24 @@
   </div>
 </div>
 
+  <!-- ── Report detail modal ── -->
+  <div id="blog-detail-overlay" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.6);align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem">
+    <div style="background:#fff;border-radius:8px;max-width:780px;width:100%;padding:2rem 2.5rem;position:relative;margin:auto">
+      <button id="blog-overlay-close" aria-label="Close" style="position:absolute;top:1rem;right:1.25rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#888;line-height:1">&#x2715;</button>
+      <div id="blog-detail-content"></div>
+    </div>
+  </div>
+
+  <!-- ── CTA ── -->
+  <div style="background:var(--black);padding:80px 32px;">
+    <div style="max-width:var(--max-w);margin:0 auto;text-align:center">
+      <div class="section-label" style="color:#888;margin-bottom:12px">Come and ride with us</div>
+      <h2 style="font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);font-weight:800;text-transform:uppercase;color:var(--white);letter-spacing:.02em;line-height:1.1;margin-bottom:16px">Want to join us<br>on a ride?</h2>
+      <p style="color:#aaa;font-size:1rem;max-width:480px;margin:0 auto 32px;line-height:1.7">Non-members are welcome to take a trial ride before committing. Come and see what we're about.</p>
+      <a href="/join.html" class="btn btn-red" style="font-size:1rem;padding:.85rem 2.25rem;letter-spacing:.06em">Take a trial ride &rarr;</a>
+    </div>
+  </div>
+
 <div data-component="footer"></div>
 
 <script src="/js/components.js"></script>
