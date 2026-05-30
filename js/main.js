@@ -5,11 +5,15 @@
 
 import {
   getEvents,
+  getEvent,
+  getRoute,
   getTrips,
-  renderEventList,
   renderTripCards,
   showLoading,
   showError,
+  formatDateBox,
+  formatDistance,
+  formatElevation,
 } from './rwgps.js';
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
@@ -38,18 +42,305 @@ document.addEventListener('DOMContentLoaded', function () {
   if (page === 'blog') loadBlogPage();
 });
 
-// ─── Home page — upcoming rides preview (3 items) ────────────────────────────
+// ─── Home page — rides this week (full card + modal, mirrors rides.html) ──────
+
+const escHtml = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function decimate(pts, maxPts = 300) {
+  if (pts.length <= maxPts) return pts;
+  const step = Math.ceil(pts.length / maxPts);
+  return pts.filter((_, i) => i % step === 0);
+}
+
+function renderMiniMap(containerId, trackPoints) {
+  const el = document.getElementById(containerId);
+  if (!el || !trackPoints || !trackPoints.length) return;
+  const pts = decimate(trackPoints, 200).map(p => [p.y, p.x]);
+  const map = L.map(el, { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  const poly = L.polyline(pts, { color: '#D0021B', weight: 2.5, opacity: 0.9 }).addTo(map);
+  map.fitBounds(poly.getBounds(), { padding: [6, 6] });
+}
+
+let homeModalMap  = null;
+let homeElevChart = null;
+
+function openHomeModal(eventData) {
+  const { event, route, trackPoints } = eventData;
+  const overlay = document.getElementById('ev-modal-overlay');
+  if (!overlay) return;
+
+  document.getElementById('ev-modal-title').textContent = event.name;
+  const dateStr = new Date(event.start_date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('ev-modal-date').textContent = event.start_time ? `${dateStr} · ${event.start_time.slice(0,5)}` : dateStr;
+
+  const dist    = route && route.distance      ? formatDistance(route.distance) : null;
+  const elev    = route && route.elevation_gain ? formatElevation(route.elevation_gain) : null;
+  const diff    = route && route.difficulty    ? route.difficulty.charAt(0).toUpperCase() + route.difficulty.slice(1) : null;
+  const terrain = route && route.terrain       ? route.terrain.charAt(0).toUpperCase() + route.terrain.slice(1) : null;
+  const stats   = [
+    dist    ? { label: 'Distance',   val: dist }        : null,
+    elev    ? { label: 'Elevation',  val: `↑ ${elev}` } : null,
+    diff    ? { label: 'Difficulty', val: diff }        : null,
+    terrain ? { label: 'Terrain',   val: terrain }      : null,
+  ].filter(Boolean);
+  document.getElementById('ev-modal-stats').innerHTML = stats.map(s =>
+    `<div><div class="ev-modal-stat-label">${s.label}</div><div class="ev-modal-stat-val">${escHtml(s.val)}</div></div>`
+  ).join('');
+
+  const locEl = document.getElementById('ev-modal-location');
+  locEl.innerHTML = event.location ? `<strong>Meeting point:</strong> ${escHtml(event.location)}` : '';
+
+  const descEl = document.getElementById('ev-modal-desc');
+  descEl.textContent = event.description || (route && route.description) || '';
+  descEl.style.display = descEl.textContent ? 'block' : 'none';
+
+  overlay.classList.add('open');
+
+  // Map
+  const mapEl = document.getElementById('ev-modal-map');
+  if (homeModalMap) { homeModalMap.remove(); homeModalMap = null; }
+  mapEl.innerHTML = '';
+  if (trackPoints && trackPoints.length) {
+    const pts = decimate(trackPoints, 400).map(p => [p.y, p.x]);
+    homeModalMap = L.map(mapEl, { zoomControl: true, attributionControl: true });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+    }).addTo(homeModalMap);
+    const startPt = trackPoints[0];
+    L.circleMarker([startPt.y, startPt.x], { radius: 7, color: '#fff', fillColor: '#22c55e', fillOpacity: 1, weight: 2 })
+      .bindTooltip('Start').addTo(homeModalMap);
+    const poly = L.polyline(pts, { color: '#D0021B', weight: 3, opacity: 0.9 }).addTo(homeModalMap);
+    homeModalMap.fitBounds(poly.getBounds(), { padding: [20, 20] });
+  } else if (event.lat && event.lng) {
+    homeModalMap = L.map(mapEl, { zoomControl: true, attributionControl: true }).setView([event.lat, event.lng], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+    }).addTo(homeModalMap);
+    L.marker([event.lat, event.lng]).addTo(homeModalMap);
+  } else {
+    mapEl.innerHTML = '<p style="padding:20px;color:var(--gray);text-align:center">No route map available</p>';
+  }
+
+  // Elevation chart
+  const elevWrap = document.getElementById('ev-modal-elev-wrap');
+  if (homeElevChart) { homeElevChart.destroy(); homeElevChart = null; }
+  if (trackPoints && trackPoints.length) {
+    elevWrap.style.display = 'block';
+    const sampled = decimate(trackPoints, 400);
+    const labels  = sampled.map(p => (p.d / 1000).toFixed(1));
+    const elevFt  = sampled.map(p => Math.round(p.e * 3.28084));
+    const ctx     = document.getElementById('ev-modal-elev-chart').getContext('2d');
+    homeElevChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: elevFt,
+          borderColor: '#D0021B',
+          backgroundColor: 'rgba(208,2,27,0.1)',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: true,
+          tension: 0.3,
+        }]
+      },
+      options: {
+        animation: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { maxTicksLimit: 8, font: { size: 11 } }, title: { display: true, text: 'Distance (km)', font: { size: 11 } } },
+          y: { ticks: { font: { size: 11 } }, title: { display: true, text: 'Elevation (ft)', font: { size: 11 } } }
+        }
+      }
+    });
+  } else {
+    elevWrap.style.display = 'none';
+  }
+}
+
+function closeHomeModal() {
+  const overlay = document.getElementById('ev-modal-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function resetHomeTrialForm() {
+  ['trial-first-name','trial-last-name','trial-email'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('input-error'); }
+  });
+  const errEl = document.getElementById('trial-signup-error');
+  if (errEl) errEl.classList.remove('visible');
+  const btn = document.getElementById('btn-trial-signup');
+  if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
+}
+
+function initHomeModal() {
+  const overlay = document.getElementById('ev-modal-overlay');
+  if (!overlay) return;
+
+  document.getElementById('ev-modal-close').addEventListener('click', () => {
+    closeHomeModal();
+    resetHomeTrialForm();
+  });
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) { closeHomeModal(); resetHomeTrialForm(); }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHomeModal(); });
+
+  // Join-ride button on card -> open modal then scroll to signup
+  document.getElementById('upcoming-events').addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-join-ride');
+    if (!btn) return;
+    e.stopPropagation();
+    btn.closest('.event-card').click();
+    setTimeout(() => {
+      document.getElementById('trial-signup-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 120);
+  });
+
+  // Trial signup submit
+  document.getElementById('btn-trial-signup').addEventListener('click', async function() {
+    const firstName = document.getElementById('trial-first-name').value.trim();
+    const lastName  = document.getElementById('trial-last-name').value.trim();
+    const email     = document.getElementById('trial-email').value.trim();
+    const errorEl   = document.getElementById('trial-signup-error');
+
+    errorEl.classList.remove('visible');
+    ['trial-first-name','trial-last-name','trial-email'].forEach(id => {
+      document.getElementById(id).classList.remove('input-error');
+    });
+
+    let valid = true;
+    if (!firstName) { document.getElementById('trial-first-name').classList.add('input-error'); valid = false; }
+    if (!lastName)  { document.getElementById('trial-last-name').classList.add('input-error');  valid = false; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      document.getElementById('trial-email').classList.add('input-error'); valid = false;
+    }
+    if (!valid) {
+      errorEl.textContent = 'Please fill in all fields with a valid email address.';
+      errorEl.classList.add('visible');
+      return;
+    }
+
+    const btn = document.getElementById('btn-trial-signup');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    const eventName = document.getElementById('ev-modal-title').textContent || '';
+    try {
+      const res = await fetch('https://members.holmfirth.cc/api/trial/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ first_name: firstName, last_name: lastName, email, event_name: eventName }),
+      });
+      const data = await res.json();
+      if (!res.ok && !data.ok) throw new Error(data.error || 'Sign-up failed. Please try again.');
+
+      closeHomeModal();
+      resetHomeTrialForm();
+      document.getElementById('thankyou-ride-name').textContent = eventName || 'your chosen ride';
+      document.getElementById('thankyou-overlay').classList.add('open');
+    } catch (err) {
+      errorEl.textContent = err.message || 'Something went wrong. Please try again.';
+      errorEl.classList.add('visible');
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  });
+
+  // Thank-you close
+  document.getElementById('btn-thankyou-close').addEventListener('click', () => {
+    document.getElementById('thankyou-overlay').classList.remove('open');
+  });
+  document.getElementById('thankyou-overlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+}
+
 async function loadHomeEvents() {
-  const container = document.getElementById('home-events');
+  const container = document.getElementById('upcoming-events');
   if (!container) return;
 
   showLoading(container, 3, 'event-row-skeleton');
+  initHomeModal();
 
   try {
-    const data = await getEvents();
-    renderEventList(container, data.events ?? [], { limit: 3 });
+    const { events = [] } = await getEvents();
+    const todayStr   = new Date().toISOString().slice(0, 10);
+    const cutoffDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const upcoming   = events.filter(e => {
+      const d = e.start_date || (e.starts_at || '').slice(0, 10);
+      return d >= todayStr && d <= cutoffDate;
+    });
+
+    if (!upcoming.length) {
+      container.innerHTML = '<p class="rwgps-empty">No rides scheduled in the next seven days — check back soon.</p>';
+      return;
+    }
+
+    const details = await Promise.all(
+      upcoming.map(e => getEvent(e.id).catch(() => ({ event: e })))
+    );
+    const routeDetails = await Promise.all(
+      details.map(({ event }) => {
+        const r = event.routes && event.routes[0];
+        return r ? getRoute(r.id).catch(() => null) : Promise.resolve(null);
+      })
+    );
+
+    container.innerHTML = '';
+    details.forEach(({ event }, i) => {
+      const routeMeta   = event.routes && event.routes[0];
+      const routeFull   = routeDetails[i] ? routeDetails[i].route : null;
+      const trackPoints = routeFull ? routeFull.track_points : null;
+      const srcRoute    = routeMeta || routeFull;
+
+      const { day, month } = formatDateBox(event.start_date || event.starts_at);
+      const time      = event.start_time ? event.start_time.slice(0, 5) : '';
+      const dist      = srcRoute && srcRoute.distance       ? formatDistance(srcRoute.distance) : '';
+      const elev      = srcRoute && srcRoute.elevation_gain ? `↑ ${formatElevation(srcRoute.elevation_gain)}` : '';
+      const routeName = (routeFull || routeMeta) ? (routeFull || routeMeta).name.trim() : '';
+      const metaParts = [event.location, dist, elev].filter(Boolean);
+      const metaLine  = [time, metaParts.join(' · ')].filter(Boolean).join(' · ');
+      const miniMapId = `mini-map-${event.id}`;
+
+      const card = document.createElement('div');
+      card.className = 'event-card';
+      card.innerHTML = `
+        <div class="event-card-inner">
+          <div class="event-date-box">
+            <div class="event-date-day">${day}</div>
+            <div class="event-date-month">${month}</div>
+          </div>
+          <div class="event-info">
+            <div class="event-name">${escHtml(event.name)}</div>
+            ${metaLine  ? `<div class="event-meta">${escHtml(metaLine)}</div>` : ''}
+            ${routeName ? `<div class="event-route-name">${escHtml(routeName)}</div>` : ''}
+          </div>
+          ${trackPoints ? `<div class="event-mini-map" id="${miniMapId}"></div>` : ''}
+        </div>
+        <div class="event-card-hint" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <span>Tap for map &amp; elevation profile →</span>
+          <button class="btn-join-ride" data-event-id="${event.id}" data-event-name="${escHtml(event.name)}"
+            style="background:var(--red);color:white;border:none;cursor:pointer;font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:6px 14px;border-radius:4px;white-space:nowrap;transition:background 0.15s;"
+            onmouseover="this.style.background='#b0011a'" onmouseout="this.style.background='var(--red)'">
+            JOIN THIS RIDE →
+          </button>
+        </div>`;
+
+      card.addEventListener('click', () => openHomeModal(
+        { event, route: routeFull || routeMeta, trackPoints }
+      ));
+      container.appendChild(card);
+
+      if (trackPoints) {
+        requestAnimationFrame(() => renderMiniMap(miniMapId, trackPoints));
+      }
+    });
+
   } catch (err) {
-    showError(container, 'Could not load events right now.', loadHomeEvents);
+    showError(container, 'Could not load upcoming rides. Please try again shortly.');
   }
 }
 

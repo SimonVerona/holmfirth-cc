@@ -16,6 +16,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="HCC">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
     [data-reveal].revealed { opacity: 1; transform: none; }
@@ -39,6 +42,179 @@
     .fr-step-desc { font-size: 0.95rem; color: rgba(255,255,255,0.65); line-height: 1.6; }
     .fr-tagline { margin-top: 56px; text-align: center; }
     .fr-tagline span { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; font-style: italic; color: var(--red, #D0021B); letter-spacing: 0.01em; }
+
+    /* ── Upcoming events ── */
+    .event-card {
+      background: var(--white); border: 1px solid var(--light);
+      border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+      cursor: pointer; transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .event-card:hover { border-color: var(--red); box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    .event-card-inner { display: flex; align-items: stretch; gap: 0; }
+    .event-date-box {
+      flex-shrink: 0; width: 64px; text-align: center;
+      background: var(--red); padding: 16px 4px; display: flex;
+      flex-direction: column; align-items: center; justify-content: center;
+    }
+    .event-date-day {
+      font-family: var(--font-display); font-size: 26px; font-weight: 800;
+      line-height: 1; color: #fff;
+    }
+    .event-date-month {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: rgba(255,255,255,0.8); margin-top: 3px;
+    }
+    .event-info { flex: 1; min-width: 0; padding: 16px 20px; }
+    .event-name {
+      font-family: var(--font-display); font-size: 17px; font-weight: 700;
+      text-transform: uppercase; color: var(--black); line-height: 1.2;
+    }
+    .event-meta { font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 4px; }
+    .event-route-name { font-size: 12px; color: var(--red); font-weight: 600; margin-top: 4px; }
+    .event-mini-map {
+      flex-shrink: 0; width: 140px; min-height: 120px;
+      background: var(--light); position: relative;
+    }
+    .event-mini-map .leaflet-container { width: 140px; height: 100%; min-height: 120px; }
+    .event-card-hint {
+      font-size: 11px; color: var(--gray); text-align: right;
+      padding: 6px 14px 8px; border-top: 1px solid var(--light);
+    }
+    .event-row-skeleton {
+      height: 120px; border-radius: 12px; background: var(--light);
+      margin-bottom: 16px;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .skeleton-pulse { animation: pulse 1.4s ease-in-out infinite; }
+    .rwgps-empty, .rwgps-error { font-size: 14px; color: var(--gray); padding: 24px 0; }
+    .rwgps-error { color: #c0392b; }
+
+    /* ── Event modal ── */
+    .ev-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      z-index: 9000; align-items: center; justify-content: center; padding: 20px;
+    }
+    .ev-modal-overlay.open { display: flex; }
+    .ev-modal {
+      background: #fff; border-radius: 16px; width: 100%; max-width: 720px;
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .ev-modal-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 24px 28px 16px; border-bottom: 1px solid var(--light);
+    }
+    .ev-modal-title {
+      font-family: var(--font-display); font-size: 22px; font-weight: 800;
+      text-transform: uppercase; color: var(--black); line-height: 1.2;
+    }
+    .ev-modal-date { font-size: 13px; color: var(--gray); margin-top: 4px; }
+    .ev-modal-close {
+      flex-shrink: 0; background: none; border: none; cursor: pointer;
+      font-size: 24px; line-height: 1; color: var(--gray); padding: 4px;
+      margin-left: 16px;
+    }
+    .ev-modal-close:hover { color: var(--black); }
+    .ev-modal-stats {
+      display: flex; gap: 24px; flex-wrap: wrap;
+      padding: 16px 28px; background: var(--light);
+    }
+    .ev-modal-stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray); }
+    .ev-modal-stat-val { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--black); }
+    .ev-modal-map { height: 320px; }
+    .ev-modal-map .leaflet-container { height: 320px; }
+    .ev-modal-elev { padding: 20px 28px 8px; }
+    .ev-modal-elev-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray); margin-bottom: 10px; }
+    .ev-modal-desc { padding: 16px 28px 24px; font-size: 14px; color: var(--gray); line-height: 1.6; }
+    .ev-modal-location { padding: 0 28px 20px; font-size: 13px; color: var(--gray); }
+    .ev-modal-location strong { color: var(--black); }
+
+    /* ── Trial signup section (inside event modal) ── */
+    .trial-signup-section {
+      border-top: 2px solid var(--red);
+      margin: 0 28px 24px;
+      padding-top: 20px;
+    }
+    .trial-signup-title {
+      font-family: var(--font-display); font-size: 16px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--black);
+      margin-bottom: 4px;
+    }
+    .trial-signup-subtitle {
+      font-size: 13px; color: var(--gray); margin-bottom: 16px; line-height: 1.5;
+    }
+    .trial-signup-fields {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;
+    }
+    .trial-signup-fields-full { margin-bottom: 12px; }
+    .trial-field label {
+      display: block; font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); margin-bottom: 6px;
+    }
+    .trial-field input {
+      width: 100%; border: 1px solid #ddd; padding: 10px 12px;
+      font-family: var(--font-body); font-size: 14px; border-radius: 6px;
+      outline: none; transition: border-color 0.15s; color: var(--black);
+    }
+    .trial-field input:focus { border-color: var(--red); }
+    .trial-field input::placeholder { color: #aaa; }
+    .trial-field input.input-error { border-color: #e74c3c; }
+    .trial-signup-error {
+      display: none; background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.3);
+      color: #c0392b; font-size: 13px; padding: 10px 14px; border-radius: 6px;
+      margin-bottom: 12px; line-height: 1.4;
+    }
+    .trial-signup-error.visible { display: block; }
+    .btn-trial-signup {
+      width: 100%; background: var(--red); color: white; border: none; cursor: pointer;
+      font-family: var(--font-display); font-weight: 800; font-size: 15px;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 24px;
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      gap: 10px; transition: background 0.15s;
+    }
+    .btn-trial-signup:hover { background: #b0011a; }
+    .btn-trial-signup:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-trial-signup .ts-spinner {
+      display: none; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+      border-radius: 50%; animation: ts-spin 0.6s linear infinite; flex-shrink: 0;
+    }
+    .btn-trial-signup.loading .ts-spinner { display: block; }
+    .btn-trial-signup.loading .ts-label { opacity: 0.7; }
+    @keyframes ts-spin { to { transform: rotate(360deg); } }
+
+    /* ── Thank-you dialog ── */
+    .thankyou-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+      z-index: 10000; align-items: center; justify-content: center; padding: 20px;
+    }
+    .thankyou-overlay.open { display: flex; }
+    .thankyou-card {
+      background: white; border-radius: 16px; width: 100%; max-width: 460px;
+      padding: 40px 36px; text-align: center;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+      border-top: 4px solid var(--red);
+    }
+    .thankyou-icon { font-size: 3rem; margin-bottom: 16px; line-height: 1; }
+    .thankyou-title {
+      font-family: var(--font-display); font-size: 26px; font-weight: 800;
+      text-transform: uppercase; color: var(--black); margin-bottom: 10px;
+    }
+    .thankyou-body { font-size: 15px; color: var(--gray); line-height: 1.65; margin-bottom: 28px; }
+    .thankyou-ride {
+      background: var(--light); border-radius: 8px; padding: 14px 18px;
+      font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 28px;
+    }
+    .btn-thankyou-close {
+      background: var(--black); color: white; border: none; cursor: pointer;
+      font-family: var(--font-display); font-weight: 800; font-size: 14px;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 32px;
+      border-radius: 6px; transition: background 0.15s;
+    }
+    .btn-thankyou-close:hover { background: var(--red); }
+    @media (max-width: 500px) {
+      .trial-signup-fields { grid-template-columns: 1fr; }
+      .thankyou-card { padding: 28px 20px; }
+    }
   </style>
 </head>
 <body data-page="home">
@@ -238,12 +414,13 @@
     <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;" data-reveal>
       <div>
         <div class="section-label">What's on</div>
-        <h2 class="section-title">Upcoming rides</h2>
+        <h2 class="section-title">Rides this week</h2>
+        <p class="section-body" style="margin-top:8px;">Upcoming club rides over the next seven days. Tap any ride to see the route map and elevation profile.</p>
       </div>
       <a href="/rides" class="btn btn-outline-dark">All rides →</a>
     </div>
     <!-- Live events — populated by js/main.js → loadHomeEvents() -->
-    <div id="home-events" class="events-list" data-reveal data-reveal-delay="1">
+    <div id="upcoming-events" style="margin-top: 28px;" data-reveal data-reveal-delay="1">
       <!-- Skeleton injected here while loading -->
     </div>
   </div>
@@ -269,6 +446,67 @@
 
 <script src="/js/components.js"></script>
 <script type="module" src="/js/main.js"></script>
+
+<!-- Modal -->
+<div class="ev-modal-overlay" id="ev-modal-overlay">
+  <div class="ev-modal" id="ev-modal">
+    <div class="ev-modal-header">
+      <div>
+        <div class="ev-modal-title" id="ev-modal-title"></div>
+        <div class="ev-modal-date" id="ev-modal-date"></div>
+      </div>
+      <button class="ev-modal-close" id="ev-modal-close" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="ev-modal-stats" id="ev-modal-stats"></div>
+    <div class="ev-modal-location" id="ev-modal-location"></div>
+    <div class="ev-modal-map" id="ev-modal-map"></div>
+    <div class="ev-modal-elev" id="ev-modal-elev-wrap">
+      <div class="ev-modal-elev-title">Elevation profile</div>
+      <canvas id="ev-modal-elev-chart" height="100"></canvas>
+    </div>
+    <div class="ev-modal-desc" id="ev-modal-desc"></div>
+    <div class="trial-signup-section" id="trial-signup-section">
+      <div class="trial-signup-title">Join this ride</div>
+      <p class="trial-signup-subtitle">
+        Not a member yet? Sign up below and we'll expect you. No commitment — you can come on up to two rides for free.
+      </p>
+      <div class="trial-signup-error" id="trial-signup-error"></div>
+      <div class="trial-signup-fields">
+        <div class="trial-field">
+          <label for="trial-first-name">First name</label>
+          <input type="text" id="trial-first-name" placeholder="e.g. Dave" autocomplete="given-name">
+        </div>
+        <div class="trial-field">
+          <label for="trial-last-name">Last name</label>
+          <input type="text" id="trial-last-name" placeholder="e.g. Smith" autocomplete="family-name">
+        </div>
+      </div>
+      <div class="trial-signup-fields-full trial-field">
+        <label for="trial-email">Email address</label>
+        <input type="email" id="trial-email" placeholder="you@example.com" autocomplete="email" inputmode="email">
+      </div>
+      <button class="btn-trial-signup" id="btn-trial-signup" type="button">
+        <span class="ts-spinner"></span>
+        <span class="ts-label">Sign me up for this ride</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Thank-you dialog -->
+<div class="thankyou-overlay" id="thankyou-overlay">
+  <div class="thankyou-card">
+    <div class="thankyou-icon">🚴</div>
+    <div class="thankyou-title">See you out there!</div>
+    <p class="thankyou-body">
+      Thanks for signing up for a trial ride. We're looking forward to seeing you.
+      <br><br>
+      Non-members are welcome for up to two rides — just look out for the group leader on the day.
+    </p>
+    <div class="thankyou-ride" id="thankyou-ride-name"></div>
+    <button class="btn-thankyou-close" id="btn-thankyou-close">Got it, see you soon!</button>
+  </div>
+</div>
 
   <script>
     if ('serviceWorker' in navigator) {
