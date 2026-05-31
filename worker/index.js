@@ -222,6 +222,38 @@ async function handleRequest(request, env) {
     return addCors(res, cors);
   }
 
+  // ── /api/committee ────────────────────────────────────────
+  if (path === '/api/committee') {
+    const membersUrl = env.MEMBERS_URL || 'https://members.holmfirth.cc';
+    try {
+      const res = await fetch(`${membersUrl}/api/public/committee`);
+      const data = await res.json();
+      return new Response(JSON.stringify(data), {
+        headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },
+      });
+    } catch (e) {
+      return new Response(JSON.stringify({ members: [] }), {
+        headers: { ...cors, 'Content-Type': 'application/json' },
+      });
+    }
+  }
+
+  // ── /api/committee/:id/avatar ───────────────────────────
+  const committeeAvatarMatch = path.match(/^\/api\/committee\/([^/]+)\/avatar$/);
+  if (committeeAvatarMatch) {
+    const membersUrl = env.MEMBERS_URL || 'https://members.holmfirth.cc';
+    try {
+      const res = await fetch(`${membersUrl}/api/public/committee/${committeeAvatarMatch[1]}/avatar`);
+      if (!res.ok) return new Response('Not found', { status: 404 });
+      const ct = res.headers.get('Content-Type') || 'image/jpeg';
+      return new Response(res.body, {
+        headers: { 'Content-Type': ct, 'Cache-Control': 'public, max-age=3600', ...cors },
+      });
+    } catch (e) {
+      return new Response('Not found', { status: 404 });
+    }
+  }
+
   // ── /api/health ─────────────────────────────────────────
   if (path === '/api/health') {
     return new Response(JSON.stringify({ ok: true, ts: Date.now() }), {
