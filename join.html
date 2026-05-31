@@ -115,7 +115,7 @@
       <div class="section-label" style="justify-content: center;">Not sure yet?</div>
       <h3 style="font-family: var(--font-display); font-size: 28px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">Come for a trial ride</h3>
       <p style="color: var(--gray); font-weight: 300; max-width: 460px; margin: 0 auto 24px;">Non-members are welcome to join us for up to two rides before deciding. Just get in touch first so we can expect you.</p>
-      <a href="/rides#rides-this-week" class="btn btn-outline-dark">Join a Free Trial Ride →</a>
+      <a href="/rides#rides-this-week" class="btn btn-outline-dark" onclick="_ga('trial_ride_cta_click',{source:'join_page'})">Join a Free Trial Ride →</a>
     </div>
 
   </div>
@@ -300,13 +300,24 @@
   }
 </style>
 
+<script type="module">
+import { trackEvent } from '/js/analytics.js';
+window._hccTrack = trackEvent;
+</script>
+
 <script>
+function _ga(name, params) {
+  if (typeof window._hccTrack === 'function') window._hccTrack(name, params);
+  else if (typeof window.gtag === 'function') window.gtag('event', name, params);
+}
+
 (function() {
   const MEMBERS_API = 'https://members.holmfirth.cc';
   let membershipTypes = [];
   let selectedTypeId  = null;
 
   window.openJoinWizard = function() {
+    _ga('join_wizard_open');
     const modal = document.getElementById('joinModal');
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -404,6 +415,7 @@
       if (type) {
         document.getElementById('jwAmountText').textContent =
           `Annual fee: ${fmt(type.price_pence)} — ${type.label} membership`;
+        _ga('join_wizard_step1_complete', { membership_type: type.label, value: type.price_pence / 100, currency: 'GBP' });
       }
       jwShowStage(2);
     } catch {
@@ -428,6 +440,7 @@
       environment: 'live',
       onSuccess: function() {
         // Mandate authorised — flip member to pending then show confirmation
+        _ga('membership_signup_complete');
         if (memberId) {
           fetch(`${MEMBERS_API}/api/gocardless/mandate-started`, {
             method: 'POST',
