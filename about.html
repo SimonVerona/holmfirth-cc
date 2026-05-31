@@ -22,7 +22,8 @@
     [data-reveal-delay="1"] { transition-delay: 0.15s; }
     .committee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 40px; }
     .committee-card { background: var(--light); border-radius: var(--radius); padding: 20px; }
-    .committee-initials { width: 44px; height: 44px; border-radius: 50%; background: var(--red); color: white; font-family: var(--font-display); font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+    .committee-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--red); color: white; font-family: var(--font-display); font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow: hidden; flex-shrink: 0; }
+    .committee-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .committee-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
     .committee-role { font-size: 12px; color: var(--gray); font-weight: 300; line-height: 1.4; }
   </style>
@@ -49,58 +50,41 @@
       <h2 class="section-title">The committee</h2>
       <p class="section-body">HCC is run by volunteers. If you're interested in any of the vacant posts, please get in touch.</p>
     </div>
-    <div class="committee-grid" data-reveal data-reveal-delay="1">
-      <div class="committee-card">
-        <div class="committee-initials">TC</div>
-        <div class="committee-name">Tracey Coldwell</div>
-        <div class="committee-role">Chairperson, Club Coach, Volunteer Co-ordinator</div>
-      </div>
-      <div class="committee-card">
-        <div class="committee-initials">AH</div>
-        <div class="committee-name">Alison Hughes</div>
-        <div class="committee-role">Secretary, Welfare Officer</div>
-      </div>
-      <div class="committee-card">
-        <div class="committee-initials">DA</div>
-        <div class="committee-name">David Amies</div>
-        <div class="committee-role">Treasurer</div>
-      </div>
-      <div class="committee-card">
-        <div class="committee-initials">CM</div>
-        <div class="committee-name">Carol Macklin</div>
-        <div class="committee-role">Membership Secretary</div>
-      </div>
-      <div class="committee-card">
-        <div class="committee-initials">RN</div>
-        <div class="committee-name">Richard Needham</div>
-        <div class="committee-role">Club Runs Co-ordinator</div>
-      </div>
-      <div class="committee-card">
-        <div class="committee-initials">PR</div>
-        <div class="committee-name">Peter Root</div>
-        <div class="committee-role">Club Coach</div>
-      </div>
-      <div class="committee-card">
-        <div class="committee-initials">EM</div>
-        <div class="committee-name">Emily Murphy</div>
-        <div class="committee-role">Welfare Officer</div>
-      </div>
-      <div class="committee-card">
-        <div class="committee-initials">AB</div>
-        <div class="committee-name">Alex Beaumont</div>
-        <div class="committee-role">Social Media Officer</div>
-      </div>
-      <div class="committee-card">
-        <div class="committee-initials">AG</div>
-        <div class="committee-name">Adrian Gamble</div>
-        <div class="committee-role">Social Media Officer</div>
-      </div>
-      <div class="committee-card" style="border: 1.5px dashed rgba(0,0,0,0.15);">
-        <div class="committee-initials" style="background: var(--offwhite); color: var(--gray);">?</div>
-        <div class="committee-name" style="color: var(--gray);">Vacant</div>
-        <div class="committee-role">Young Persons Representative — interested? <a href="/contact" style="color: var(--red);">Get in touch</a></div>
-      </div>
+    <div id="committee-grid" class="committee-grid" data-reveal data-reveal-delay="1">
+      <div style="grid-column:1/-1;text-align:center;color:var(--gray);font-size:13px;padding:32px 0;">Loading committee&hellip;</div>
     </div>
+
+    <script>
+    (function() {
+      function initials(f,l){return((f||"").charAt(0)+(l||"").charAt(0)).toUpperCase()||"?";}
+      function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+      function renderCommittee(members) {
+        var grid = document.getElementById("committee-grid");
+        if (!grid) return;
+        var html = "";
+        (members||[]).forEach(function(m) {
+          var ini = initials(m.first_name, m.last_name);
+          var av = m.has_image
+            ? '<div class="committee-avatar"><img src="/api/committee/'+m.id+'/avatar" alt="'+esc(m.first_name+" "+m.last_name)+'" loading="lazy" onerror="this.parentNode.innerHTML=\''+ini+'\'"></div>'
+            : '<div class="committee-avatar">'+ini+"</div>";
+          html += '<div class="committee-card">'+av
+            +'<div class="committee-name">'+esc(m.first_name)+" "+esc(m.last_name)+"</div>"
+            +'<div class="committee-role">'+esc(m.committee_role||"")+"</div>"
+            +"</div>";
+        });
+        html += '<div class="committee-card" style="border:1.5px dashed rgba(0,0,0,0.15);">'
+          +'<div class="committee-avatar" style="background:var(--offwhite);color:var(--gray);">?</div>'
+          +'<div class="committee-name" style="color:var(--gray);">Vacant</div>'
+          +'<div class="committee-role">Young Persons Representative — interested? <a href="/contact" style="color:var(--red);">Get in touch</a></div>'
+          +"</div>";
+        grid.innerHTML = html;
+      }
+      fetch("/api/committee")
+        .then(function(r){return r.json();})
+        .then(function(d){renderCommittee(d.members||[]);})
+        .catch(function(){renderCommittee([]);});
+    })();
+    </script>
 
     <!-- Coaching -->
     <div style="margin-top: 80px;" id="coaching" data-reveal>
