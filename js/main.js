@@ -359,7 +359,7 @@ async function loadBlogPage() {
   try {
     const res  = await fetch(MEMBERS_API + '/api/ride-reports?limit=50&status=published');
     const data = await res.json();
-    const reports = data.reports ?? [];
+    const reports = (data.reports ?? []).slice().sort((a, b) => new Date(b.event_date) - new Date(a.event_date));
 
     container.innerHTML = '';
 
