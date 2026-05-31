@@ -15,6 +15,7 @@ import {
   formatDistance,
   formatElevation,
 } from './rwgps.js';
+import { trackEvent } from './analytics.js';
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
 // Nav toggle and active-link logic is handled in js/components.js after the
@@ -237,6 +238,7 @@ function initHomeModal() {
       const data = await res.json();
       if (!res.ok && !data.ok) throw new Error(data.error || 'Sign-up failed. Please try again.');
 
+      trackEvent('trial_ride_signup_complete', { event_name: eventName });
       closeHomeModal();
       resetHomeTrialForm();
       document.getElementById('thankyou-ride-name').textContent = eventName || 'your chosen ride';
