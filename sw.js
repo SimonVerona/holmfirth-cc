@@ -1,4 +1,4 @@
-const CACHE = 'hcc-v14';
+const CACHE = 'hcc-v15';
 
 const STATIC = [
   '/',
