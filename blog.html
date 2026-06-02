@@ -21,6 +21,21 @@
     [data-reveal].revealed { opacity: 1; transform: none; }
     [data-reveal-delay="1"] { transition-delay: 0.15s; }
 
+    /* ── Photo hero variant ── */
+    .page-hero--photo {
+      background-size: cover;
+      background-position: center 40%;
+      position: relative;
+    }
+    .page-hero--photo .page-hero-pattern { display: none; }
+    .page-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.52);
+      z-index: 0;
+    }
+    .page-hero--photo .page-hero-content { position: relative; z-index: 1; }
+
     /* ── Blog grid ── */
     .blog-grid {
       display: grid;
@@ -135,8 +150,8 @@
 
 <div data-component="nav"></div>
 
-<div class="page-hero">
-  <div class="page-hero-pattern"></div>
+<div class="page-hero page-hero--photo" style="background-image: url('/images/cafe_stop_hero2.jpg');">
+  <div class="page-hero-overlay"></div>
   <div class="page-hero-content">
     <div class="section-label">From the road</div>
     <h1>Ride<br>writeups</h1>
