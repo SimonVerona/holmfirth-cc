@@ -89,6 +89,7 @@
           <div class="form-success" id="formSuccess">
             Thanks for getting in touch! We'll get back to you as soon as we can.
           </div>
+          <div id="formError" style="display:none;background:#fdecea;border:1px solid #f5c6c6;border-radius:var(--radius);padding:14px 18px;color:#c0392b;font-size:14px;margin-top:12px;"></div>
         </form>
       </div>
 
@@ -168,13 +169,46 @@
     }
   }
 
-  // Simple form demo (replace with Netlify/Formspree action in production)
-  document.getElementById('contactForm').addEventListener('submit', function(e) {
+  document.getElementById('contactForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    document.getElementById('formSuccess').style.display = 'block';
-    this.reset();
-    this.querySelector('button[type=submit]').textContent = 'Sent ✓';
-    this.querySelector('button[type=submit]').disabled = true;
+    const btn = this.querySelector('button[type=submit]');
+    const successEl = document.getElementById('formSuccess');
+    const errorEl   = document.getElementById('formError');
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    successEl.style.display = 'none';
+    if (errorEl) errorEl.style.display = 'none';
+
+    const payload = {
+      name:    document.getElementById('name').value.trim(),
+      email:   document.getElementById('email').value.trim(),
+      to:      document.getElementById('to').value,
+      message: document.getElementById('message').value.trim(),
+    };
+
+    try {
+      const res  = await fetch('https://members.holmfirth.cc/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
+        successEl.style.display = 'block';
+        this.reset();
+        btn.textContent = 'Sent ✓';
+      } else {
+        const msg = data.error || 'Something went wrong — please try again.';
+        if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
+        btn.disabled = false;
+        btn.textContent = 'Send message →';
+      }
+    } catch (err) {
+      if (errorEl) { errorEl.textContent = 'Could not send — please check your connection and try again.'; errorEl.style.display = 'block'; }
+      btn.disabled = false;
+      btn.textContent = 'Send message →';
+    }
   });
 </script>
 
