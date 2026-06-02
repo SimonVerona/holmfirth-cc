@@ -20,6 +20,21 @@
     [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
     [data-reveal].revealed { opacity: 1; transform: none; }
     [data-reveal-delay="1"] { transition-delay: 0.15s; }
+
+    /* ── Photo hero variant ── */
+    .page-hero--photo {
+      background-size: cover;
+      background-position: center 30%;
+      position: relative;
+    }
+    .page-hero--photo .page-hero-pattern { display: none; }
+    .page-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.52);
+      z-index: 0;
+    }
+    .page-hero--photo .page-hero-content { position: relative; z-index: 1; }
     .committee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 40px; }
     .committee-card { background: var(--light); border-radius: var(--radius); padding: 20px; }
     .committee-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--red); color: white; font-family: var(--font-display); font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow: hidden; flex-shrink: 0; }
@@ -32,8 +47,8 @@
 
 <div data-component="nav"></div>
 
-<div class="page-hero">
-  <div class="page-hero-pattern"></div>
+<div class="page-hero page-hero--photo" style="background-image: url('/images/about_hero.jpg');">
+  <div class="page-hero-overlay"></div>
   <div class="page-hero-content">
     <div class="section-label">Est. 2013</div>
     <h1>About<br>the club</h1>
