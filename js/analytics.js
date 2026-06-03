@@ -2,6 +2,8 @@
  * js/analytics.js — Holmfirth CC
  *
  * Thin wrapper around GA4 gtag() for goal tracking.
+ * consent.js is responsible for loading gtag() — this module only fires
+ * events if gtag is already present (i.e. consent was granted).
  *
  * Goals:
  *   trial_ride_cta_click        — user clicks "Join a Free Trial Ride" CTA
@@ -12,7 +14,7 @@
  *   membership_signup_complete  — GoCardless mandate authorised (payment committed)
  */
 
-export function trackEvent(eventName, params = {}) {
+export function trackEvent(eventName, params) {
   if (typeof window.gtag !== 'function') return;
-  window.gtag('event', eventName, params);
+  window.gtag('event', eventName, params || {});
 }
