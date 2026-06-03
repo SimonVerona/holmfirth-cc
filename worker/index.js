@@ -268,6 +268,7 @@ async function handleRequest(request, env) {
     '/contact': '/contact.html',
     '/join':    '/join.html',
     '/blog':    '/blog.html',
+    '/privacy': '/privacy.html',
   };
   if (cleanUrls[path]) {
     const rewritten = new Request(new URL(cleanUrls[path], request.url).toString(), request);
@@ -301,3 +302,4 @@ function addCors(response, cors) {
 export default {
   fetch: handleRequest,
 };
+
