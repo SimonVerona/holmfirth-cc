@@ -1,4 +1,4 @@
-const CACHE = 'hcc-v19';
+const CACHE = 'hcc-v20';
 
 const STATIC = [
   '/',
@@ -9,6 +9,7 @@ const STATIC = [
   '/blog',
   '/manifest.json',
   '/css/style.css',
+  '/js/consent.js',
   '/js/main.js',
   '/icons/icon-192.png',
   '/icons/icon-512.png'
@@ -48,3 +49,4 @@ self.addEventListener('fetch', e => {
     }))
   );
 });
+
