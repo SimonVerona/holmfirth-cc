@@ -16,9 +16,9 @@
   'use strict';
 
   // ── Replace these with your real measurement IDs before go-live ─────────────
-  var GA_MEASUREMENT_ID  = 'G-XXXXXXXXXX';   // Google Analytics 4
-  var CLARITY_PROJECT_ID = 'XXXXXXXXXX';      // Microsoft Clarity
-  var FB_PIXEL_ID        = 'XXXXXXXXXXXXXXX'; // Facebook Pixel
+  var GA_MEASUREMENT_ID  = 'G-REPLACE_WITH_GA4_ID';   // TODO: replace before go-live
+  var CLARITY_PROJECT_ID = 'REPLACE_WITH_CLARITY_ID';  // TODO: replace before go-live
+  var FB_PIXEL_ID        = 'REPLACE_WITH_FB_PIXEL_ID'; // TODO: replace before go-live
   // ────────────────────────────────────────────────────────────────────────────
 
   var STORAGE_KEY     = 'hcc_consent';
