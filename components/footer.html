@@ -60,7 +60,13 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span class="footer-copy">© 2026 Holmfirth Cycling Club. All rights reserved.</span>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <span class="footer-copy">© 2026 Holmfirth Cycling Club. All rights reserved.</span>
+        <span class="footer-copy" style="display:flex;gap:16px;flex-wrap:wrap;">
+          <a href="/privacy" style="color:rgba(255,255,255,0.35);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#D0021B'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">Privacy &amp; Cookies</a>
+          <a href="#" onclick="event.preventDefault();window.HCCConsent&&window.HCCConsent.showPreferences()" style="color:rgba(255,255,255,0.35);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#D0021B'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">Cookie settings</a>
+        </span>
+      </div>
       <div class="footer-affil">
         <a href="https://www.britishcycling.org.uk/club/profile/6695/holmfirth-cycling-club" target="_blank" rel="noopener" aria-label="British Cycling affiliated club" class="footer-affil-bc">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 28" width="110" height="28" aria-hidden="true">
@@ -118,3 +124,4 @@
     </div>
   </div>
 </footer>
+
