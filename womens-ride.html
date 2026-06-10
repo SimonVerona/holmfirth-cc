@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Women's Ride — Holmfirth Cycling Club</title>
+  <meta name="description" content="Holmfirth CC's Women's Ride — a dedicated group ride for women of all abilities. Confidence-building, sociable, and welcoming.">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/icons/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="/icons/favicon-16x16.png" type="image/png" sizes="16x16">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#D0021B">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HCC">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    [data-reveal].revealed { opacity: 1; transform: none; }
+    [data-reveal-delay="1"] { transition-delay: 0.1s; }
+    [data-reveal-delay="2"] { transition-delay: 0.2s; }
+
+    .womens-hero {
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.38) 60%, rgba(0,0,0,0.62) 100%),
+        url('/images/rides-hero.jpg') center center / cover no-repeat;
+    }
+    .womens-hero .page-hero-pattern { opacity: 0; }
+
+    /* Stat bar */
+    .stat-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--offwhite);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 48px 0;
+    }
+    .stat-bar-item {
+      background: var(--white);
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .stat-bar-val {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--red);
+      line-height: 1;
+    }
+    .stat-bar-label {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--gray);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* Why ride card grid */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .why-card {
+      background: var(--light);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+    }
+    .why-card-icon {
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+    .why-card-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    .why-card-body {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    /* Ride detail panel */
+    .ride-detail-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .ride-detail-block {
+      background: var(--light);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+    }
+    .ride-detail-block .section-label {
+      margin-bottom: 8px;
+    }
+    .ride-detail-block h3 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-bottom: 10px;
+    }
+    .ride-detail-block p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    /* Quote block */
+    .quote-block {
+      border-left: 4px solid var(--red);
+      padding: 24px 28px;
+      background: var(--light);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 48px 0;
+    }
+    .quote-text {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--black);
+      line-height: 1.4;
+    }
+    .quote-attribution {
+      font-size: 13px;
+      color: var(--gray);
+      margin-top: 10px;
+    }
+
+    /* All groups reference */
+    .groups-ref {
+      margin-top: 64px;
+    }
+    .groups-ref-intro {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.7;
+      max-width: 640px;
+      margin-top: 12px;
+    }
+    .groups-ref-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-top: 32px;
+    }
+    .groups-ref-card {
+      background: var(--light);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      text-align: center;
+      border: 2px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .groups-ref-card:hover {
+      border-color: var(--red);
+    }
+    .groups-ref-card.highlight {
+      background: var(--black);
+    }
+    .groups-ref-letter {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--red);
+      line-height: 1;
+    }
+    .groups-ref-card.highlight .groups-ref-letter {
+      color: var(--red);
+    }
+    .groups-ref-name {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-top: 6px;
+      line-height: 1.3;
+    }
+    .groups-ref-card.highlight .groups-ref-name {
+      color: white;
+    }
+    .groups-ref-detail {
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 4px;
+      font-weight: 300;
+    }
+    .groups-ref-card.highlight .groups-ref-detail {
+      color: rgba(255,255,255,0.55);
+    }
+
+    @media (max-width: 768px) {
+      .why-grid { grid-template-columns: 1fr; }
+      .ride-detail-panel { grid-template-columns: 1fr; }
+      .stat-bar { grid-template-columns: 1fr; }
+      .groups-ref-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .groups-ref-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+  <script src="/js/consent.js"></script>
+</head>
+<body data-page="rides">
+
+<div data-component="nav"></div>
+
+<div class="page-hero womens-hero">
+  <div class="page-hero-pattern"></div>
+  <div class="page-hero-content">
+    <div class="section-label">Open to all women</div>
+    <h1>Women's<br>Ride</h1>
+    <p>A dedicated group ride for women of all abilities. Whether you're returning to cycling or a regular club rider looking for a new challenge — you're welcome here.</p>
+  </div>
+</div>
+
+<div style="padding: 80px 32px; background: var(--white);">
+  <div style="max-width: var(--max-w); margin: 0 auto;">
+
+    <!-- Intro -->
+    <div data-reveal>
+      <div class="section-label">About the ride</div>
+      <h2 class="section-title">Why a Women's Ride?</h2>
+      <p class="section-body">Many of our existing ride groups are fast and demanding — and while women ride in all of them, the reality is that speed and group dynamics can make it harder for newer or less confident riders to find a way in. The Women's Ride changes that.</p>
+      <p class="section-body" style="margin-top: 12px;">Cycling in West Yorkshire is tough. The hills don't care. But riding with a group of people who are there for the same reasons — to enjoy the roads, to challenge themselves, and to feel at home on a bike — makes all the difference. That's what this ride is about.</p>
+    </div>
+
+    <!-- Quote -->
+    <div class="quote-block" data-reveal>
+      <div class="quote-text">"If you don't see someone like you doing something, you're less likely to be inspired. Visibility matters."</div>
+      <div class="quote-attribution">— The thinking behind the ride</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-bar" data-reveal>
+      <div class="stat-bar-item">
+        <div class="stat-bar-val">All<br>abilities</div>
+        <div class="stat-bar-label">No minimum fitness level required</div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-val">Sociable<br>pace</div>
+        <div class="stat-bar-label">Rides that stay together and re-group</div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-val">Holmfirth<br>based</div>
+        <div class="stat-bar-label">Same start point as all club rides</div>
+      </div>
+    </div>
+
+    <!-- Why cards -->
+    <div data-reveal>
+      <div class="section-label">What it offers</div>
+      <h2 class="section-title">What to expect</h2>
+    </div>
+    <div class="why-grid" data-reveal data-reveal-delay="1">
+      <div class="why-card">
+        <div class="why-card-icon">🚴</div>
+        <div class="why-card-title">Confidence first</div>
+        <div class="why-card-body">The Women's Ride is designed to be a lower-pressure environment. There's no expectation of prior group riding experience, and the pace is set by the group on the day — not dictated by a target speed.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-icon">🤝</div>
+        <div class="why-card-title">Good company</div>
+        <div class="why-card-body">Riding with people who are there for similar reasons makes a real difference. Expect conversation, encouragement, and a café stop. These rides are social first, athletic second.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-icon">🌄</div>
+        <div class="why-card-title">Real roads</div>
+        <div class="why-card-body">West Yorkshire's roads are hilly and rewarding. The Women's Ride takes on proper routes — not flat loops — with the knowledge that the group will tackle them together, at a manageable pace.</div>
+      </div>
+    </div>
+
+    <!-- Practical details -->
+    <div style="margin-top: 80px;" data-reveal>
+      <div class="section-label">Practical details</div>
+      <h2 class="section-title">When &amp; where</h2>
+    </div>
+    <div class="ride-detail-panel" data-reveal data-reveal-delay="1">
+      <div class="ride-detail-block">
+        <div class="section-label">Schedule</div>
+        <h3>Ride days</h3>
+        <p>The Women's Ride runs on a schedule posted to the club calendar on Ride with GPS. Check upcoming rides for exact dates — and if you're not sure when the next one is, drop us a message via the contact page.</p>
+      </div>
+      <div class="ride-detail-block">
+        <div class="section-label">Meeting point</div>
+        <h3>Co-op car park, Holmfirth</h3>
+        <p>The same start point as all other club rides. If the ride listing shows a different location, that will be clearly stated. Arrive a few minutes early if it's your first time — the ride leader will be there to meet you.</p>
+      </div>
+      <div class="ride-detail-block">
+        <div class="section-label">Distance</div>
+        <h3>Typically 20–40 miles</h3>
+        <p>Routes are chosen to be achievable for riders building fitness and confidence. You don't need to be able to complete a full Group B or C ride to enjoy the Women's Ride — that's the point.</p>
+      </div>
+      <div class="ride-detail-block">
+        <div class="section-label">Membership</div>
+        <h3>Two free trial rides</h3>
+        <p>Non-members are welcome to come along for up to two rides before joining the club. Please let us know in advance so the ride leader can expect you. Contact the Club Runs Co-ordinator to arrange this.</p>
+      </div>
+    </div>
+
+    <!-- All groups reference -->
+    <div class="groups-ref" data-reveal>
+      <div class="section-label">All ride groups</div>
+      <h2 class="section-title">Where the Women's Ride fits in</h2>
+      <p class="groups-ref-intro">The Women's Ride sits alongside our A–D groups and Gravel ride. As your confidence and fitness grow, you're encouraged to try other groups — the Women's Ride is a starting point, not a ceiling.</p>
+      <div class="groups-ref-grid" data-reveal data-reveal-delay="1">
+        <div class="groups-ref-card">
+          <div class="groups-ref-letter">A</div>
+          <div class="groups-ref-name">Beginners &amp; returners</div>
+          <div class="groups-ref-detail">15–20 mi · Steady</div>
+        </div>
+        <div class="groups-ref-card">
+          <div class="groups-ref-letter">B</div>
+          <div class="groups-ref-name">Short &amp; long options</div>
+          <div class="groups-ref-detail">25–50 mi · 10.5–12 mph</div>
+        </div>
+        <div class="groups-ref-card">
+          <div class="groups-ref-letter">C</div>
+          <div class="groups-ref-name">Short &amp; long options</div>
+          <div class="groups-ref-detail">40–70 mi · 12–14 mph</div>
+        </div>
+        <div class="groups-ref-card">
+          <div class="groups-ref-letter">D</div>
+          <div class="groups-ref-name">Fast &amp; far</div>
+          <div class="groups-ref-detail">70–95+ mi · 13.5–15.5 mph</div>
+        </div>
+        <div class="groups-ref-card highlight">
+          <div class="groups-ref-letter">W</div>
+          <div class="groups-ref-name">Women's Ride</div>
+          <div class="groups-ref-detail">20–40 mi · All abilities</div>
+        </div>
+      </div>
+      <p style="margin-top: 24px; font-size: 13px; color: var(--gray);">
+        <a href="/rides#groups" style="color: var(--red); font-weight: 600;">View full group descriptions on the Rides page →</a>
+      </p>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div style="margin-top: 64px; text-align: center; padding: 48px; background: var(--black); border-radius: var(--radius);" data-reveal>
+      <div style="font-family: var(--font-display); font-size: 32px; font-weight: 800; text-transform: uppercase; color: white; margin-bottom: 10px;">Come on a ride</div>
+      <p style="color: rgba(255,255,255,0.55); font-weight: 300; font-size: 15px; margin-bottom: 28px;">Get in touch and we'll make sure you're expected on the next Women's Ride.</p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="/contact" class="btn btn-red btn-arrow">Get in touch</a>
+        <a href="/join" class="btn btn-outline">Join the club →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div data-component="footer"></div>
+
+<script src="/js/components.js"></script>
+<script type="module" src="/js/main.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW:', err));
+    });
+  }
+</script>
+</body>
+</html>
