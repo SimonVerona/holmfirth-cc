@@ -362,7 +362,7 @@ img { max-width: 100%; display: block; }
 /* ─── RIDE GROUPS ────────────────────────────────────── */
 .rides-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 2px;
   margin-top: 56px;
   background: var(--offwhite);
@@ -1067,7 +1067,6 @@ footer {
     padding: 12px 0;
   }
   .quick-jump-inner { grid-template-columns: repeat(2, 1fr); }
-  .rides-grid { grid-template-columns: 1fr 1fr; }
   .footer-top { grid-template-columns: 1fr 1fr; }
   .steps-grid { grid-template-columns: 1fr; }
   .mem-cards { grid-template-columns: 1fr 1fr; }
