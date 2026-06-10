@@ -268,7 +268,8 @@ async function handleRequest(request, env) {
     '/contact': '/contact.html',
     '/join':    '/join.html',
     '/blog':    '/blog.html',
-    '/privacy': '/privacy.html',
+    '/privacy':      '/privacy.html',
+    '/womens-ride':  '/womens-ride.html',
   };
   if (cleanUrls[path]) {
     const rewritten = new Request(new URL(cleanUrls[path], request.url).toString(), request);
