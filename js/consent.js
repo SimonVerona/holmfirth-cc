@@ -17,7 +17,7 @@
 
   // ── Replace these with your real measurement IDs before go-live ─────────────
   var GA_MEASUREMENT_ID  = 'G-7DC0SRE8Z6';
-  var CLARITY_PROJECT_ID = 'REPLACE_WITH_CLARITY_ID';  // TODO: replace before go-live
+  var CLARITY_PROJECT_ID = 'x4ds9hgxqn';  // TODO: replace before go-live
   var FB_PIXEL_ID        = 'REPLACE_WITH_FB_PIXEL_ID'; // TODO: replace before go-live
   // ────────────────────────────────────────────────────────────────────────────
 
