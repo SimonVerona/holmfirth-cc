@@ -1,4 +1,4 @@
-const CACHE = 'hcc-v25';
+const CACHE = 'hcc-v26';
 
 const STATIC_ASSETS = [
   '/manifest.json',
@@ -59,3 +59,4 @@ self.addEventListener('fetch', e => {
     }))
   );
 });
+
