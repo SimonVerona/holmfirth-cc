@@ -40,7 +40,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const page = document.body.dataset.page;
 
   if (page === 'home') loadHomeEvents();
-  if (page === 'blog') loadBlogPage();
+  if (page === 'blog') {
+    loadBlogPage().then(() => {
+      const hash = window.location.hash;
+      const match = hash.match(/^#report-(.+)$/);
+      if (match) showBlogReport(match[1]);
+    });
+  }
 });
 
 // ─── Home page — rides this week (full card + modal, mirrors rides.html) ──────
@@ -412,6 +418,7 @@ async function showBlogReport(reportId) {
   const content = document.getElementById('blog-detail-content');
   overlay.style.display = 'flex';
   document.body.style.overflow = 'hidden';
+  history.replaceState(null, '', '#report-' + reportId);
   content.innerHTML = '<div style="padding:40px 0;text-align:center;color:#888">Loading&hellip;</div>';
 
   try {
@@ -470,10 +477,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('blog-detail-overlay');
   if (!overlay) return;
   document.getElementById('blog-overlay-close').addEventListener('click', () => {
-    overlay.style.display = 'none'; document.body.style.overflow = '';
+    overlay.style.display = 'none'; document.body.style.overflow = ''; history.replaceState(null, '', ' ');
   });
   overlay.addEventListener('click', e => {
-    if (e.target === overlay) { overlay.style.display = 'none'; document.body.style.overflow = ''; }
+    if (e.target === overlay) { overlay.style.display = 'none'; document.body.style.overflow = ''; history.replaceState(null, '', ' '); }
   });
 });
 
