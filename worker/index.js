@@ -299,8 +299,7 @@ async function handleRequest(request, env) {
   <meta name="twitter:image"      content="${imgUrl}" />`;
 
       const html = await blogRes.text();
-      const injected = html.replace('</head>', ogTags + '
-</head>');
+      const injected = html.replace('</head>', ogTags + '\n</head>');
       return new Response(injected, {
         status: 200,
         headers: {
