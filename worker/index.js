@@ -261,13 +261,64 @@ async function handleRequest(request, env) {
     });
   }
 
+  // ── /blog — serve with OG tags if ?report= param present ──────────────────
+  if (path === '/blog') {
+    const reportId = url.searchParams.get('report');
+    const blogReq  = new Request(new URL('/blog.html', request.url).toString(), request);
+    const blogRes  = await env.ASSETS.fetch(blogReq);
+    if (!reportId) return noStoreHtml(blogRes);
+
+    // Fetch report from members API and inject OG tags
+    try {
+      const MEMBERS = 'https://members.holmfirth.cc';
+      const apiRes  = await fetch(`${MEMBERS}/api/ride-reports/${reportId}`);
+      if (!apiRes.ok) return noStoreHtml(blogRes);
+      const r = await apiRes.json();
+
+      const title   = (r.title || 'Ride Report') + ' — Holmfirth Cycle Club';
+      const dist    = r.distance_miles ? parseFloat(r.distance_miles).toFixed(0) + ' miles' : '';
+      const elev    = r.elevation_ft   ? Math.round(r.elevation_ft) + 'ft' : '';
+      const stats   = [dist, elev].filter(Boolean).join(' · ');
+      const excerpt = r.body ? r.body.replace(/<[^>]+>/g, '').slice(0, 200).trim() : '';
+      const desc    = [stats, excerpt].filter(Boolean).join(' — ') || 'A ride report from Holmfirth Cycle Club.';
+      const pageUrl = `https://www.holmfirth.cc/blog?report=${reportId}`;
+      const imgUrl  = r.map_image_key
+        ? `${MEMBERS}/ride-report-images/${r.map_image_key.replace('ride-reports/', '')}`
+        : 'https://www.holmfirth.cc/images/cafe_stop_hero2.jpg';
+
+      const ogTags = `
+  <meta property="og:type"        content="article" />
+  <meta property="og:title"       content="${title.replace(/"/g, '&quot;')}" />
+  <meta property="og:description" content="${desc.replace(/"/g, '&quot;')}" />
+  <meta property="og:url"         content="${pageUrl}" />
+  <meta property="og:image"       content="${imgUrl}" />
+  <meta property="og:site_name"   content="Holmfirth Cycle Club" />
+  <meta name="twitter:card"       content="summary_large_image" />
+  <meta name="twitter:title"      content="${title.replace(/"/g, '&quot;')}" />
+  <meta name="twitter:description" content="${desc.replace(/"/g, '&quot;')}" />
+  <meta name="twitter:image"      content="${imgUrl}" />`;
+
+      const html = await blogRes.text();
+      const injected = html.replace('</head>', ogTags + '
+</head>');
+      return new Response(injected, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html;charset=UTF-8',
+          'Cache-Control': 'no-store',
+        },
+      });
+    } catch (e) {
+      return noStoreHtml(blogRes);
+    }
+  }
+
   // Clean URL routing — map /about -> /about.html etc.
   const cleanUrls = {
     '/about':   '/about.html',
     '/rides':   '/rides.html',
     '/contact': '/contact.html',
     '/join':    '/join.html',
-    '/blog':    '/blog.html',
     '/privacy':      '/privacy.html',
     '/womens-ride':  '/womens-ride.html',
   };
