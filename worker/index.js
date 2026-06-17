@@ -265,10 +265,11 @@ async function handleRequest(request, env) {
   if (path === '/blog') {
     const reportId = url.searchParams.get('report');
     // Create a clean request for the asset fetch — strip UA to avoid bot blocks on subrequests
-    const blogReq  = new Request(new URL('/blog.html', request.url).toString(), {
-      method: 'GET',
-      headers: { 'Accept': 'text/html' },
-    });
+    // Use original request headers but rewrite path to blog.html
+    const blogUrl = new URL(request.url);
+    blogUrl.pathname = '/blog.html';
+    blogUrl.search = '';
+    const blogReq  = new Request(blogUrl.toString(), request);
     const blogRes  = await env.ASSETS.fetch(blogReq);
     if (!reportId) return noStoreHtml(blogRes);
 
