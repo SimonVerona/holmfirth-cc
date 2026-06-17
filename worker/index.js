@@ -505,7 +505,7 @@ async function handleRequest(request, env) {
     try {
       const MEMBERS = 'https://members.holmfirth.cc';
       const apiRes  = await fetch(`${MEMBERS}/api/public/ride-reports/${reportId}`, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HolmfirthCC-Worker/1.0)', 'Accept': 'application/json' } });
-      if (!apiRes.ok) return new Response(BLOG_HTML, { status: 200, headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'no-store' } });
+      if (!apiRes.ok) return new Response('API FAILED: ' + apiRes.status, { status: 200, headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
       const r = await apiRes.json();
 
       const title   = (r.title || 'Ride Report') + ' — Holmfirth Cycle Club';
@@ -532,7 +532,9 @@ async function handleRequest(request, env) {
   <meta name="twitter:image"      content="${imgUrl}" />`;
 
       const html = BLOG_HTML;
+      if (!html.includes('</head>')) return new Response('NO HEAD TAG FOUND', { status: 200, headers: { 'Content-Type': 'text/plain' } });
       const injected = html.replace('</head>', ogTags + '\n</head>');
+      if (injected === html) return new Response('REPLACE DID NOTHING - tags: ' + ogTags.slice(0,100), { status: 200, headers: { 'Content-Type': 'text/plain' } });
       return new Response(injected, {
         status: 200,
         headers: {
@@ -541,7 +543,7 @@ async function handleRequest(request, env) {
         },
       });
     } catch (e) {
-      return new Response(BLOG_HTML, { status: 200, headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'no-store' } });
+      return new Response('CATCH ERROR: ' + e.message + ' | ' + e.stack, { status: 200, headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'no-store' } });
     }
   }
 
