@@ -479,6 +479,23 @@ async function handleRequest(request, env) {
   }
 
   // ── /blog — serve with OG tags if ?report= param present ──────────────────
+  // Debug endpoint — remove after testing
+  if (path === '/blog-debug') {
+    const reportId = url.searchParams.get('report');
+    try {
+      const MEMBERS = 'https://members.holmfirth.cc';
+      const apiRes = await fetch(`${MEMBERS}/api/public/ride-reports/${reportId}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HolmfirthCC-Worker/1.0)', 'Accept': 'application/json' }
+      });
+      const body = await apiRes.text();
+      return new Response(JSON.stringify({ status: apiRes.status, body }), {
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+      });
+    } catch(e) {
+      return new Response(JSON.stringify({ error: e.message }), { headers: { 'Content-Type': 'application/json' } });
+    }
+  }
+
   if (path === '/blog') {
     const reportId = url.searchParams.get('report');
     // Serve blog.html directly from embedded constant to avoid bot-blocking on env.ASSETS
