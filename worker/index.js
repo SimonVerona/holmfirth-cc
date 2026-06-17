@@ -472,6 +472,28 @@ async function handleRequest(request, env) {
   }
 
   // ── /api/health ─────────────────────────────────────────
+  // /api/ride-report-image/:key -- proxy R2 image publicly for FB OG tag
+  const rrImageMatch = path.match(/^\/api\/ride-report-image\/(.+)$/);
+  if (rrImageMatch) {
+    const key = rrImageMatch[1];
+    try {
+      const imgRes = await fetch(`https://members.holmfirth.cc/ride-report-images/${key}`, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; HolmfirthCC-Worker/1.0)',
+          'X-HCC-Internal': 'rr-image-proxy',
+        },
+      });
+      if (!imgRes.ok) return new Response('Image not found', { status: 404 });
+      const proxyHeaders = new Headers();
+      proxyHeaders.set('Content-Type', imgRes.headers.get('Content-Type') || 'image/jpeg');
+      proxyHeaders.set('Cache-Control', 'public, max-age=86400');
+      proxyHeaders.set('Access-Control-Allow-Origin', '*');
+      return new Response(imgRes.body, { status: 200, headers: proxyHeaders });
+    } catch (e) {
+      return new Response('Proxy error', { status: 502 });
+    }
+  }
+
   if (path === '/api/health') {
     return new Response(JSON.stringify({ ok: true, ts: Date.now() }), {
       headers: { ...cors, 'Content-Type': 'application/json' },
@@ -516,7 +538,7 @@ async function handleRequest(request, env) {
       const desc    = [stats, excerpt].filter(Boolean).join(' — ') || 'A ride report from Holmfirth Cycle Club.';
       const pageUrl = `https://www.holmfirth.cc/blog?report=${reportId}`;
       const imgUrl  = r.map_image_key
-        ? `${MEMBERS}/ride-report-images/${r.map_image_key.replace('ride-reports/', '')}`
+        ? `https://www.holmfirth.cc/api/ride-report-image/${r.map_image_key.replace('ride-reports/', '')}`
         : 'https://www.holmfirth.cc/images/cafe_stop_hero2.jpg';
 
       const ogTags = `
