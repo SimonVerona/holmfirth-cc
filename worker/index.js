@@ -487,7 +487,7 @@ async function handleRequest(request, env) {
     // Fetch report from members public API and inject OG tags
     try {
       const MEMBERS = 'https://members.holmfirth.cc';
-      const apiRes  = await fetch(`${MEMBERS}/api/public/ride-reports/${reportId}`);
+      const apiRes  = await fetch(`${MEMBERS}/api/public/ride-reports/${reportId}`, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; HolmfirthCC-Worker/1.0)', 'Accept': 'application/json' } });
       if (!apiRes.ok) return new Response(BLOG_HTML, { status: 200, headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'no-store' } });
       const r = await apiRes.json();
 
