@@ -264,7 +264,11 @@ async function handleRequest(request, env) {
   // ── /blog — serve with OG tags if ?report= param present ──────────────────
   if (path === '/blog') {
     const reportId = url.searchParams.get('report');
-    const blogReq  = new Request(new URL('/blog.html', request.url).toString(), request);
+    // Create a clean request for the asset fetch — strip UA to avoid bot blocks on subrequests
+    const blogReq  = new Request(new URL('/blog.html', request.url).toString(), {
+      method: 'GET',
+      headers: { 'Accept': 'text/html' },
+    });
     const blogRes  = await env.ASSETS.fetch(blogReq);
     if (!reportId) return noStoreHtml(blogRes);
 
@@ -322,12 +326,17 @@ async function handleRequest(request, env) {
     '/womens-ride':  '/womens-ride.html',
   };
   if (cleanUrls[path]) {
-    const rewritten = new Request(new URL(cleanUrls[path], request.url).toString(), request);
+    const rewritten = new Request(new URL(cleanUrls[path], request.url).toString(), { method: 'GET', headers: { 'Accept': 'text/html' } });
     return noStoreHtml(await env.ASSETS.fetch(rewritten));
   }
 
   // Fall through to static assets for all other routes
-  return noStoreHtml(await env.ASSETS.fetch(request));
+  // Strip UA on asset fetches to avoid bot-blocking subrequests
+  const cleanReq = new Request(request.url, {
+    method: request.method,
+    headers: { 'Accept': request.headers.get('Accept') || '*/*' },
+  });
+  return noStoreHtml(await env.ASSETS.fetch(cleanReq));
 }
 
 // Strip Cloudflare edge caching from HTML responses
