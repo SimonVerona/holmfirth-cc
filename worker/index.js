@@ -264,19 +264,15 @@ async function handleRequest(request, env) {
   // ── /blog — serve with OG tags if ?report= param present ──────────────────
   if (path === '/blog') {
     const reportId = url.searchParams.get('report');
-    // Create a clean request for the asset fetch — strip UA to avoid bot blocks on subrequests
-    // Use original request headers but rewrite path to blog.html
-    const blogUrl = new URL(request.url);
-    blogUrl.pathname = '/blog.html';
-    blogUrl.search = '';
-    const blogReq  = new Request(blogUrl.toString(), request);
+    // Neutral request — no UA, no cookies
+    const blogReq  = new Request(new URL('/blog.html', request.url).toString());
     const blogRes  = await env.ASSETS.fetch(blogReq);
     if (!reportId) return noStoreHtml(blogRes);
 
-    // Fetch report from members API and inject OG tags
+    // Fetch report from members public API and inject OG tags
     try {
       const MEMBERS = 'https://members.holmfirth.cc';
-      const apiRes  = await fetch(`${MEMBERS}/api/ride-reports/${reportId}`);
+      const apiRes  = await fetch(`${MEMBERS}/api/public/ride-reports/${reportId}`);
       if (!apiRes.ok) return noStoreHtml(blogRes);
       const r = await apiRes.json();
 
