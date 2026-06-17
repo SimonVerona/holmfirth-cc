@@ -499,7 +499,7 @@ async function handleRequest(request, env) {
   if (path === '/blog') {
     const reportId = url.searchParams.get('report');
     // Serve blog.html directly from embedded constant to avoid bot-blocking on env.ASSETS
-    if (!reportId) return new Response(BLOG_HTML, { status: 200, headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'no-store' } });
+    if (!reportId) return new Response(BLOG_HTML, { status: 200, headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'no-store, no-cache, must-revalidate', 'CDN-Cache-Control': 'no-store', 'Cloudflare-CDN-Cache-Control': 'no-store', 'Surrogate-Control': 'no-store' } });
 
     // Fetch report from members public API and inject OG tags
     try {
@@ -543,7 +543,7 @@ async function handleRequest(request, env) {
         },
       });
     } catch (e) {
-      return new Response('CATCH ERROR: ' + e.message + ' | ' + e.stack, { status: 200, headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'no-store' } });
+      return new Response('CATCH ERROR: ' + e.message + ' | ' + e.stack, { status: 200, headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'no-store, no-cache, must-revalidate', 'CDN-Cache-Control': 'no-store', 'Cloudflare-CDN-Cache-Control': 'no-store', 'Surrogate-Control': 'no-store' } });
     }
   }
 
