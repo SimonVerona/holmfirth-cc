@@ -488,7 +488,7 @@ async function handleRequest(request, env) {
     try {
       const MEMBERS = 'https://members.holmfirth.cc';
       const apiRes  = await fetch(`${MEMBERS}/api/public/ride-reports/${reportId}`);
-      if (!apiRes.ok) return noStoreHtml(blogRes);
+      if (!apiRes.ok) return new Response(BLOG_HTML, { status: 200, headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'no-store' } });
       const r = await apiRes.json();
 
       const title   = (r.title || 'Ride Report') + ' — Holmfirth Cycle Club';
