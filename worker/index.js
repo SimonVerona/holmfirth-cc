@@ -513,12 +513,12 @@ async function handleRequest(request, env) {
       if (!apiRes.ok) return new Response('API FAILED: ' + apiRes.status, { status: 200, headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
       const r = await apiRes.json();
 
-      const title   = (r.title || 'Ride Report') + ' — Holmfirth Cycle Club';
+      const title   = (r.title || 'Ride Report') + ' — Holmfirth Cycling Club';
       const dist    = r.distance_miles ? parseFloat(r.distance_miles).toFixed(0) + ' miles' : '';
       const elev    = r.elevation_ft   ? Math.round(r.elevation_ft) + 'ft' : '';
       const stats   = [dist, elev].filter(Boolean).join(' · ');
       const excerpt = r.body ? r.body.replace(/<[^>]+>/g, '').slice(0, 200).trim() : '';
-      const desc    = [stats, excerpt].filter(Boolean).join(' — ') || 'A ride report from Holmfirth Cycle Club.';
+      const desc    = [stats, excerpt].filter(Boolean).join(' — ') || 'A ride report from Holmfirth Cycling Club.';
       const pageUrl = `https://www.holmfirth.cc/blog?report=${reportId}`;
       const imgUrl  = r.map_image_key
         ? `https://www.holmfirth.cc/api/ride-report-image/${r.map_image_key.replace('ride-reports/', '')}`
@@ -530,7 +530,7 @@ async function handleRequest(request, env) {
   <meta property="og:description" content="${desc.replace(/"/g, '&quot;')}" />
   <meta property="og:url"         content="${pageUrl}" />
   <meta property="og:image"       content="${imgUrl}" />
-  <meta property="og:site_name"   content="Holmfirth Cycle Club" />
+  <meta property="og:site_name"   content="Holmfirth Cycling Club" />
   <meta name="twitter:card"       content="summary_large_image" />
   <meta name="twitter:title"      content="${title.replace(/"/g, '&quot;')}" />
   <meta name="twitter:description" content="${desc.replace(/"/g, '&quot;')}" />
