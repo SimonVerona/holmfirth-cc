@@ -1,5 +1,5 @@
-# Holmfirth Cycle Club
+# Holmfirth Cycling Club
 
-Public website for Holmfirth Cycle Club, Holme Valley, West Yorkshire.
+Public website for Holmfirth Cycling Club, Holme Valley, West Yorkshire.
 
 <!-- redeploy -->
