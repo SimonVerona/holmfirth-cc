@@ -384,10 +384,11 @@ async function loadBlogPage() {
       const time    = r.duration_secs  ? (Math.floor(r.duration_secs/3600) + ':' + String(Math.floor((r.duration_secs%3600)/60)).padStart(2,'0')) : '';
       const stats   = [dist, elev, time].filter(Boolean).join(' &middot; ');
 
-      const imgStyle = r.map_image_key
-        ? `background-image:url('${MEMBERS_API}/ride-report-images/${r.map_image_key.replace('ride-reports/','')}');background-size:cover;background-position:center`
+      const cardImgKey = r.cover_image_key || r.map_image_key;
+      const imgStyle = cardImgKey
+        ? `background-image:url('${MEMBERS_API}/ride-report-images/${cardImgKey.replace('ride-reports/','')}');background-size:cover;background-position:center`
         : '';
-      const imgClass = r.map_image_key ? 'blog-card-img' : 'blog-card-img blog-card-img--placeholder';
+      const imgClass = cardImgKey ? 'blog-card-img' : 'blog-card-img blog-card-img--placeholder';
 
       const card = document.createElement('article');
       card.className = 'blog-card';
