@@ -265,6 +265,18 @@ function initHomeModal() {
   });
 }
 
+const HOME_GROUP_PILL_COLORS = { a: '#D0021B', b: '#2563EB', c: '#16A34A', d: '#EA580C', gravel: '#7C3AED', "women's": '#DB2777', womens: '#DB2777' };
+function buildHomeGroupPills(groupsStr) {
+  if (!groupsStr) return '';
+  const pills = groupsStr.split(',').map(g => g.trim()).filter(Boolean).map(g => {
+    const key = g.toLowerCase();
+    const col = HOME_GROUP_PILL_COLORS[key] || '#888';
+    const label = (key === "women's" || key === 'womens') ? "Women's" : g.toUpperCase();
+    return `<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.05em;color:#fff;background:${col};line-height:1.6;">${label}</span>`;
+  });
+  return pills.length ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;">${pills.join('')}</div>` : '';
+}
+
 async function loadHomeEvents() {
   const container = document.getElementById('upcoming-events');
   if (!container) return;
@@ -296,6 +308,17 @@ async function loadHomeEvents() {
       })
     );
 
+    // Fetch ride group data from members portal
+    const homeGroupsMap = {};
+    try {
+      const ids = upcoming.map(e => String(e.id));
+      const gr = await fetch('https://members.holmfirth.cc/api/rides/events/groups?ids=' + ids.join(','));
+      if (gr.ok) {
+        const gd = await gr.json();
+        (gd.groups || []).forEach(({event_id, groups}) => { homeGroupsMap[String(event_id)] = groups; });
+      }
+    } catch(e) {}
+
     container.innerHTML = '';
     details.forEach(({ event }, i) => {
       const routeMeta   = event.routes && event.routes[0];
@@ -311,6 +334,7 @@ async function loadHomeEvents() {
       const metaParts = [event.location, dist, elev].filter(Boolean);
       const metaLine  = [time, metaParts.join(' · ')].filter(Boolean).join(' · ');
       const miniMapId = `mini-map-${event.id}`;
+      const pillsHtml = buildHomeGroupPills(homeGroupsMap[String(event.id)]);
 
       const card = document.createElement('div');
       card.className = 'event-card';
@@ -324,6 +348,7 @@ async function loadHomeEvents() {
             <div class="event-name">${escHtml(event.name)}</div>
             ${metaLine  ? `<div class="event-meta">${escHtml(metaLine)}</div>` : ''}
             ${routeName ? `<div class="event-route-name">${escHtml(routeName)}</div>` : ''}
+            ${pillsHtml}
           </div>
           ${trackPoints ? `<div class="event-mini-map" id="${miniMapId}"></div>` : ''}
         </div>
