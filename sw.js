@@ -1,4 +1,4 @@
-const CACHE = 'hcc-v31';
+const CACHE = 'hcc-v32';
 
 const STATIC_ASSETS = [
   '/manifest.json',
