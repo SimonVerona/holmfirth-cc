@@ -538,7 +538,7 @@
   let elevChart = null;
 
   function openModal(eventData, routeData) {
-    const { event, route, trackPoints } = eventData;
+    const { event, route, trackPoints, isRouteless, distanceMiles } = eventData;
     const overlay = document.getElementById('ev-modal-overlay');
 
     // Header
@@ -547,10 +547,10 @@
     document.getElementById('ev-modal-date').textContent = event.start_time ? `${dateStr} · ${event.start_time.slice(0,5)}` : dateStr;
 
     // Stats
-    const dist  = route && route.distance     ? formatDistance(route.distance) : null;
-    const elev  = route && route.elevation_gain ? formatElevation(route.elevation_gain) : null;
-    const diff  = route && route.difficulty    ? route.difficulty.charAt(0).toUpperCase() + route.difficulty.slice(1) : null;
-    const terrain = route && route.terrain     ? route.terrain.charAt(0).toUpperCase() + route.terrain.slice(1) : null;
+    const dist  = isRouteless ? (distanceMiles ? `${Number(distanceMiles).toFixed(1)} mi` : null) : (route && route.distance ? formatDistance(route.distance) : null);
+    const elev  = (!isRouteless && route && route.elevation_gain) ? formatElevation(route.elevation_gain) : null;
+    const diff  = (!isRouteless && route && route.difficulty) ? route.difficulty.charAt(0).toUpperCase() + route.difficulty.slice(1) : null;
+    const terrain = (!isRouteless && route && route.terrain) ? route.terrain.charAt(0).toUpperCase() + route.terrain.slice(1) : null;
     const stats = [
       dist   ? { label: 'Distance',   val: dist }     : null,
       elev   ? { label: 'Elevation',  val: `↑ ${elev}` } : null,
@@ -567,7 +567,7 @@
 
     // Description
     const descEl = document.getElementById('ev-modal-desc');
-    descEl.textContent = event.description || (route && route.description) || '';
+    descEl.textContent = event.description || (route && route.description) || (isRouteless ? 'Route to be decided on the day' : '');
     descEl.style.display = descEl.textContent ? 'block' : 'none';
 
     overlay.classList.add('open');
@@ -596,6 +596,11 @@
           attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
         }).addTo(modalMap);
         L.marker([event.lat, event.lng]).addTo(modalMap);
+      } else if (isRouteless) {
+        mapEl.innerHTML = `<div style="height:100%;min-height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#f0f0f0;color:#888;font-family:inherit;">
+          <div style="font-weight:800;font-size:26px;">${escHtml(distanceMiles ? Number(distanceMiles).toFixed(1) + ' mi' : '')}</div>
+          <div style="font-size:13px;font-weight:600;margin-top:6px;">Route to be decided on the day</div>
+        </div>`;
       } else {
         mapEl.innerHTML = '<p style="padding:20px;color:var(--gray);text-align:center">No route map available</p>';
       }
@@ -694,14 +699,18 @@
         })
       );
 
-      // Fetch ride group data from members portal
+      // Fetch ride group / routeless data from members portal
       const eventGroupsMap = {};
+      const eventMetaMap   = {};
       try {
         const ids = upcoming.map(e => String(e.id));
         const gr = await fetch('https://members.holmfirth.cc/api/rides/events/groups?ids=' + ids.join(','));
         if (gr.ok) {
           const gd = await gr.json();
-          (gd.groups || []).forEach(({event_id, groups}) => { eventGroupsMap[String(event_id)] = groups; });
+          (gd.groups || []).forEach(({event_id, groups, is_routeless, distance_miles}) => {
+            eventGroupsMap[String(event_id)] = groups;
+            eventMetaMap[String(event_id)]   = { is_routeless: !!is_routeless, distance_miles: distance_miles || null };
+          });
         }
       } catch(e) {}
 
@@ -714,12 +723,16 @@
         // Fall back gracefully whichever layer has the data
         const trackPoints = routeFull ? routeFull.track_points : null;
         const srcRoute    = routeMeta || routeFull; // prefer routeMeta for stats (already embedded)
+        const evMeta      = eventMetaMap[String(event.id)] || {};
+        const isRouteless = !!evMeta.is_routeless;
 
         const { day, month } = formatDateBox(event.start_date || event.starts_at);
         const time       = event.start_time ? event.start_time.slice(0, 5) : '';
-        const dist       = srcRoute && srcRoute.distance       ? formatDistance(srcRoute.distance) : '';
-        const elev       = srcRoute && srcRoute.elevation_gain ? `↑ ${formatElevation(srcRoute.elevation_gain)}` : '';
-        const routeName  = (routeFull || routeMeta) ? (routeFull || routeMeta).name.trim() : '';
+        const dist       = isRouteless
+          ? (evMeta.distance_miles ? `${Number(evMeta.distance_miles).toFixed(1)} mi` : '')
+          : (srcRoute && srcRoute.distance ? formatDistance(srcRoute.distance) : '');
+        const elev       = (!isRouteless && srcRoute && srcRoute.elevation_gain) ? `↑ ${formatElevation(srcRoute.elevation_gain)}` : '';
+        const routeName  = isRouteless ? 'Route to be decided on the day' : ((routeFull || routeMeta) ? (routeFull || routeMeta).name.trim() : '');
         const metaParts  = [event.location, dist, elev].filter(Boolean);
         const meta       = metaParts.join(' · ');
         const metaLine   = [time, meta].filter(Boolean).join(' · ');
@@ -740,7 +753,7 @@
               ${routeName ? `<div class="event-route-name">${escHtml(routeName)}</div>` : ''}
               ${pillsHtml}
             </div>
-            ${trackPoints ? `<div class="event-mini-map" id="${miniMapId}"></div>` : ''}
+            ${trackPoints ? `<div class="event-mini-map" id="${miniMapId}"></div>` : (isRouteless ? `<div class="event-mini-map" style="background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#888;font-weight:800;font-size:13px;text-align:center;">${escHtml(dist || '')}</div>` : '')}
           </div>
           <div class="event-card-hint" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
             <span>Tap for map &amp; elevation profile →</span>
@@ -752,7 +765,7 @@
           </div>`;
 
         card.addEventListener('click', () => openModal(
-          { event, route: routeFull || routeMeta, trackPoints },
+          { event, route: routeFull || routeMeta, trackPoints, isRouteless, distanceMiles: evMeta.distance_miles },
           routeFull
         ));
         container.appendChild(card);
