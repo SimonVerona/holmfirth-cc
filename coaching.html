@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coaching — Holmfirth Cycling Club</title>
+  <meta name="description" content="Holmfirth CC's Go Ride coaching sessions — Saturdays at Holmfirth High School. A fun, safe way for young riders to build bike handling skills.">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/icons/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="/icons/favicon-16x16.png" type="image/png" sizes="16x16">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#D0021B">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HCC">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    [data-reveal].revealed { opacity: 1; transform: none; }
+    [data-reveal-delay="1"] { transition-delay: 0.1s; }
+    [data-reveal-delay="2"] { transition-delay: 0.2s; }
+
+    .coaching-hero {
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.38) 60%, rgba(0,0,0,0.62) 100%),
+        url('/images/about_group.jpg') center center / cover no-repeat;
+    }
+    .coaching-hero .page-hero-pattern { opacity: 0; }
+
+    /* Stat bar */
+    .stat-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--offwhite);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 48px 0;
+    }
+    .stat-bar-item {
+      background: var(--white);
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .stat-bar-val {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--red);
+      line-height: 1;
+    }
+    .stat-bar-label {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--gray);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* Why ride card grid */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .why-card {
+      background: var(--light);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+    }
+    .why-card-icon {
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+    .why-card-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    .why-card-body {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    /* Ride detail panel */
+    .ride-detail-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .ride-detail-block {
+      background: var(--light);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+    }
+    .ride-detail-block .section-label {
+      margin-bottom: 8px;
+    }
+    .ride-detail-block h3 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-bottom: 10px;
+    }
+    .ride-detail-block p {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    /* Kit checklist */
+    .kit-list {
+      list-style: none;
+      margin-top: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .kit-list li {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--gray);
+      padding-left: 24px;
+      position: relative;
+      line-height: 1.6;
+    }
+    .kit-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    /* Quote block */
+    .quote-block {
+      border-left: 4px solid var(--red);
+      padding: 24px 28px;
+      background: var(--light);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 48px 0;
+    }
+    .quote-text {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--black);
+      line-height: 1.4;
+    }
+    .quote-attribution {
+      font-size: 13px;
+      color: var(--gray);
+      margin-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .why-grid { grid-template-columns: 1fr; }
+      .ride-detail-panel { grid-template-columns: 1fr; }
+      .stat-bar { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="/js/consent.js"></script>
+</head>
+<body data-page="coaching">
+
+<div data-component="nav"></div>
+
+<div class="page-hero coaching-hero">
+  <div class="page-hero-pattern"></div>
+  <div class="page-hero-content">
+    <div class="section-label">Go Ride club</div>
+    <h1>Coaching</h1>
+    <p>A fun and safe way to introduce young riders to the world of cycle sport — building bike handling skills and confidence, one Saturday at a time.</p>
+  </div>
+</div>
+
+<div style="padding: 80px 32px; background: var(--white);">
+  <div style="max-width: var(--max-w); margin: 0 auto;">
+
+    <!-- Intro -->
+    <div data-reveal>
+      <div class="section-label">About the sessions</div>
+      <h2 class="section-title">Saturday Coaching Sessions</h2>
+      <p class="section-body">HCC is a Go Ride club, and our coaching sessions give young riders a fun and safe way to get into cycle sport. The sessions are built around bike handling skills — but first and foremost, they're about having fun.</p>
+      <p class="section-body" style="margin-top: 12px;">Everyone takes part as one group, working on the same core skills regardless of ability. Alongside the general skills work, we also introduce more advanced techniques from Cyclocross and Road Racing for riders ready for the next step.</p>
+    </div>
+
+    <!-- Quote -->
+    <div class="quote-block" data-reveal>
+      <div class="quote-text">"The sessions teach the necessary skills to make riders more competent, safer cyclists — whilst having fun."</div>
+      <div class="quote-attribution">— Holmfirth CC Club Coach</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-bar" data-reveal>
+      <div class="stat-bar-item">
+        <div class="stat-bar-val">14:30–15:30</div>
+        <div class="stat-bar-label">Saturdays, term-time and beyond</div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-val">Holmfirth<br>High School</div>
+        <div class="stat-bar-label">Top car park — same group each week</div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-val">1 free<br>taster</div>
+        <div class="stat-bar-label">Come and try it before you join</div>
+      </div>
+    </div>
+
+    <!-- Why cards -->
+    <div data-reveal>
+      <div class="section-label">What it offers</div>
+      <h2 class="section-title">What to expect</h2>
+    </div>
+    <div class="why-grid" data-reveal data-reveal-delay="1">
+      <div class="why-card">
+        <div class="why-card-icon">🚲</div>
+        <div class="why-card-title">Fun first</div>
+        <div class="why-card-body">The sessions are built around bike handling skills, but the focus is always on enjoyment. It's a relaxed, welcoming introduction to cycle sport for young riders.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-icon">🛡️</div>
+        <div class="why-card-title">Safer cycling</div>
+        <div class="why-card-body">Riders leave each session more competent and safer on a bike. Skills are taught as one group, so everyone progresses together regardless of starting ability.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-icon">🏁</div>
+        <div class="why-card-title">A path onward</div>
+        <div class="why-card-body">Alongside general handling skills, we introduce more advanced Cyclocross and Road Racing techniques for riders who want to take things further.</div>
+      </div>
+    </div>
+
+    <!-- Practical details -->
+    <div style="margin-top: 80px;" data-reveal>
+      <div class="section-label">Practical details</div>
+      <h2 class="section-title">When, where &amp; what to bring</h2>
+    </div>
+    <div class="ride-detail-panel" data-reveal data-reveal-delay="1">
+      <div class="ride-detail-block">
+        <div class="section-label">Schedule</div>
+        <h3>Saturdays, 14:30–15:30</h3>
+        <p>Held at Holmfirth High School (top car park). We occasionally run sessions at circuits instead, along with ad-hoc kids' rides and visits to a BMX track — these replace the usual session when they're on.</p>
+      </div>
+      <div class="ride-detail-block">
+        <div class="section-label">Requirements</div>
+        <h3>Must already be able to ride</h3>
+        <p>Young riders need to be able to ride a bike unaided to join a session. As sessions are held on grass, any bike used will need knobbly tyres.</p>
+      </div>
+      <div class="ride-detail-block">
+        <div class="section-label">Kit</div>
+        <h3>Bike, brakes &amp; helmet</h3>
+        <ul class="kit-list">
+          <li>Any type of bike, in good condition</li>
+          <li>Two working brakes</li>
+          <li>Knobbly tyres (sessions run on grass)</li>
+          <li>A cycling helmet — always worn</li>
+        </ul>
+      </div>
+      <div class="ride-detail-block">
+        <div class="section-label">Cost</div>
+        <h3>One free taster session</h3>
+        <p>Your first session at Holmfirth High School is free. To keep coming after that, your child will need to join Holmfirth Cycling Club as a junior member — £5.00 per year.</p>
+      </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div style="margin-top: 64px; text-align: center; padding: 48px; background: var(--black); border-radius: var(--radius);" data-reveal>
+      <div style="font-family: var(--font-display); font-size: 32px; font-weight: 800; text-transform: uppercase; color: white; margin-bottom: 10px;">Come to a session</div>
+      <p style="color: rgba(255,255,255,0.55); font-weight: 300; font-size: 15px; margin-bottom: 28px;">Get in touch with our Club Coach and bring your young rider along for a free taster session.</p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="/contact?to=coaching" class="btn btn-red btn-arrow">Contact the Club Coach</a>
+        <a href="/join" class="btn btn-outline">Join the club →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div data-component="footer"></div>
+
+<script src="/js/components.js"></script>
+<script type="module" src="/js/main.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW:', err));
+    });
+  }
+</script>
+</body>
+</html>
