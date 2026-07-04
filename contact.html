@@ -99,41 +99,95 @@
         <div class="section-label">Quick links</div>
         <h2 class="section-title" style="margin-bottom: 32px;">Who to contact</h2>
 
-        <div class="contact-info-item">
-          <div class="contact-info-icon">🚲</div>
-          <div>
-            <div class="contact-info-label">Club Runs Co-ordinator</div>
-            <div class="contact-info-val">Richard Needham</div>
-            <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Ride questions</div>
+        <div id="committee-contacts">
+          <!-- Populated by script below from /api/committee; falls back to static content on error -->
+          <div class="contact-info-item">
+            <div class="contact-info-icon">🚲</div>
+            <div>
+              <div class="contact-info-label">Club Runs Co-ordinator</div>
+              <div class="contact-info-val">Richard Needham</div>
+              <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Ride questions</div>
+            </div>
+          </div>
+
+          <div class="contact-info-item">
+            <div class="contact-info-icon">📋</div>
+            <div>
+              <div class="contact-info-label">Membership Secretary</div>
+              <div class="contact-info-val">Carol Macklin</div>
+              <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Joining, renewals, insurance questions</div>
+            </div>
+          </div>
+
+          <div class="contact-info-item">
+            <div class="contact-info-icon">🏅</div>
+            <div>
+              <div class="contact-info-label">Club Coach</div>
+              <div class="contact-info-val">Tracey Coldwell &amp; Peter Root</div>
+              <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Coaching programmes, Go Ride, junior development</div>
+            </div>
+          </div>
+
+          <div class="contact-info-item">
+            <div class="contact-info-icon">🛡</div>
+            <div>
+              <div class="contact-info-label">Welfare Officers</div>
+              <div class="contact-info-val">Alison Hughes &amp; Emily Murphy</div>
+              <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Safeguarding concerns, welfare issues</div>
+            </div>
           </div>
         </div>
 
-        <div class="contact-info-item">
-          <div class="contact-info-icon">📋</div>
-          <div>
-            <div class="contact-info-label">Membership Secretary</div>
-            <div class="contact-info-val">Carol Macklin</div>
-            <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Joining, renewals, insurance questions</div>
-          </div>
-        </div>
+        <script>
+        (function() {
+          var ROLE_META = {
+            'Club Runs Co-ordinator': { icon: '🚲', desc: 'Ride questions' },
+            'Membership Secretary':   { icon: '📋', desc: 'Joining, renewals, insurance questions' },
+            'Club Coach':             { icon: '🏅', desc: 'Coaching programmes, Go Ride, junior development' },
+            'Welfare Officer':        { icon: '🛡', desc: 'Safeguarding concerns, welfare issues' }
+          };
+          var ROLE_ORDER = ['Club Runs Co-ordinator', 'Membership Secretary', 'Club Coach', 'Welfare Officer'];
 
-        <div class="contact-info-item">
-          <div class="contact-info-icon">🏅</div>
-          <div>
-            <div class="contact-info-label">Club Coach</div>
-            <div class="contact-info-val">Tracey Coldwell &amp; Peter Root</div>
-            <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Coaching programmes, Go Ride, junior development</div>
-          </div>
-        </div>
+          function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-        <div class="contact-info-item">
-          <div class="contact-info-icon">🛡</div>
-          <div>
-            <div class="contact-info-label">Welfare Officers</div>
-            <div class="contact-info-val">Alison Hughes &amp; Emily Murphy</div>
-            <div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">Safeguarding concerns, welfare issues</div>
-          </div>
-        </div>
+          function labelFor(role, count) {
+            if (role === 'Welfare Officer' && count > 1) return 'Welfare Officers';
+            return role;
+          }
+
+          function renderCommittee(members) {
+            var byRole = {};
+            (members || []).forEach(function(m) {
+              var role = m.committee_role;
+              if (!ROLE_META[role]) return;
+              (byRole[role] = byRole[role] || []).push(m);
+            });
+
+            var html = '';
+            ROLE_ORDER.forEach(function(role) {
+              var group = byRole[role];
+              if (!group || !group.length) return;
+              var meta = ROLE_META[role];
+              var names = group.map(function(m) { return esc(m.first_name + ' ' + m.last_name); }).join(' &amp; ');
+              html += '<div class="contact-info-item">'
+                + '<div class="contact-info-icon">' + meta.icon + '</div>'
+                + '<div>'
+                + '<div class="contact-info-label">' + esc(labelFor(role, group.length)) + '</div>'
+                + '<div class="contact-info-val">' + names + '</div>'
+                + '<div style="font-size: 13px; color: var(--gray); font-weight: 300; margin-top: 2px;">' + esc(meta.desc) + '</div>'
+                + '</div></div>';
+            });
+
+            // Only replace the static fallback if we got at least one match — avoids blanking the section on partial data
+            if (html) document.getElementById('committee-contacts').innerHTML = html;
+          }
+
+          fetch('/api/committee')
+            .then(function(r) { return r.json(); })
+            .then(function(d) { renderCommittee(d.members || []); })
+            .catch(function() { /* keep static fallback markup already in the DOM */ });
+        })();
+        </script>
 
         <div style="margin-top: 32px; padding: 20px; background: var(--light); border-radius: var(--radius);">
           <div class="contact-info-label" style="margin-bottom: 10px;">Follow us</div>
