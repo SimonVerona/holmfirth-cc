@@ -564,6 +564,7 @@
   function openModal(eventData, routeData) {
     const { event, route, trackPoints, isRouteless, distanceMiles } = eventData;
     const overlay = document.getElementById('ev-modal-overlay');
+    currentEventForSignup = { id: event.id || null, name: event.name || '', date: event.start_date || null };
 
     // Header
     document.getElementById('ev-modal-title').textContent = event.name;
@@ -879,9 +880,10 @@
     btn.classList.add('loading');
     btn.disabled = true;
 
-    // Get current event name from modal title
-    const eventName = document.getElementById('ev-modal-title').textContent || '';
-    // We don't have the event ID easily here — pass name only, that's enough for audit
+    // Use the event captured when the modal opened (falls back to title text if unset)
+    const eventName = currentEventForSignup.name || document.getElementById('ev-modal-title').textContent || '';
+    const eventId   = currentEventForSignup.id   || null;
+    const eventDate = currentEventForSignup.date || null;
     try {
       const res = await fetch('https://members.holmfirth.cc/api/trial/signup', {
         method: 'POST',
@@ -891,6 +893,8 @@
           last_name:  lastName,
           email:      email,
           event_name: eventName,
+          event_id:   eventId,
+          event_date: eventDate,
         }),
       });
 
