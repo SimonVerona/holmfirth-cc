@@ -209,6 +209,7 @@
     @media (max-width: 500px) {
       .trial-signup-fields { grid-template-columns: 1fr; }
       .thankyou-card { padding: 28px 20px; }
+      .guidance-grid { grid-template-columns: 1fr !important; }
     }
   </style>
   <script src="/js/consent.js"></script>
@@ -450,7 +451,7 @@
     </div><!-- /group-cards -->
 
     <!-- Guidance section -->
-    <div style="margin-top: 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;" id="guidance" data-reveal>
+    <div class="guidance-grid" style="margin-top: 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;" id="guidance" data-reveal>
       <div style="background: var(--light); border-radius: var(--radius); padding: 32px;">
         <div class="section-label">Safety</div>
         <h3 style="font-family: var(--font-display); font-size: 24px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">Ride guidance</h3>
