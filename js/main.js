@@ -461,8 +461,8 @@ async function showBlogReport(reportId) {
     (r.images||[]).forEach(img => allImages.push(MEMBERS_API + '/ride-report-images/' + img.r2_key.replace('ride-reports/','')));
 
     const imgHtml = allImages.length
-      ? '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0">' +
-          allImages.map(src => '<img src="'+src+'" style="height:200px;width:auto;max-width:100%;object-fit:cover;border-radius:6px" alt="">').join('') +
+      ? '<div class="rr-gallery" style="display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;margin:16px 0;padding-bottom:6px">' +
+          allImages.map((src,i) => '<img src="'+src+'" data-rr-idx="'+i+'" style="height:200px;width:auto;max-width:80vw;object-fit:cover;border-radius:6px;flex:0 0 auto;scroll-snap-align:start;cursor:zoom-in" alt="">').join('') +
         '</div>'
       : '';
 
@@ -488,9 +488,62 @@ async function showBlogReport(reportId) {
         '<p style="font-size:13px;color:#888;margin-bottom:12px">Want to ride with us?</p>' +
         '<a href="/join.html" class="btn btn-red" style="font-size:.85rem">Take a trial ride &rarr;</a>' +
       '</div>';
+
+    if (allImages.length) {
+      content.querySelectorAll('[data-rr-idx]').forEach(el => {
+        el.addEventListener('click', () => openRRLightbox(allImages, parseInt(el.getAttribute('data-rr-idx'), 10)));
+      });
+    }
   } catch(e) {
     content.innerHTML = '<p style="color:#b91c1c;padding:20px 0">Could not load this report.</p>';
   }
+}
+
+// ─── Ride report image lightbox ───────────────────────────────────────────────
+function createRRLightbox() {
+  const ov = document.createElement('div');
+  ov.id = 'rr-lightbox-overlay';
+  ov.style.cssText = 'display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.92);align-items:center;justify-content:center';
+  ov.innerHTML =
+    '<button id="rr-lightbox-close" style="position:absolute;top:1rem;right:1.25rem;background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:50%;width:38px;height:38px;font-size:1.2rem;cursor:pointer;z-index:2" title="Close">&#10005;</button>' +
+    '<button id="rr-lightbox-prev" style="position:absolute;left:.5rem;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:1.5rem;cursor:pointer;z-index:2">&#8249;</button>' +
+    '<img id="rr-lightbox-img" src="" style="max-width:92vw;max-height:90vh;object-fit:contain;border-radius:4px" alt="">' +
+    '<button id="rr-lightbox-next" style="position:absolute;right:.5rem;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:1.5rem;cursor:pointer;z-index:2">&#8250;</button>' +
+    '<div id="rr-lightbox-count" style="position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);color:#fff;font-size:.75rem;background:rgba(255,255,255,.15);padding:.25rem .65rem;border-radius:12px"></div>';
+  let imgs = [], idx = 0;
+  const imgEl = ov.querySelector('#rr-lightbox-img');
+  const countEl = ov.querySelector('#rr-lightbox-count');
+  const prevBtn = ov.querySelector('#rr-lightbox-prev');
+  const nextBtn = ov.querySelector('#rr-lightbox-next');
+  function render() {
+    imgEl.src = imgs[idx];
+    countEl.textContent = (idx+1) + ' / ' + imgs.length;
+    prevBtn.style.display = imgs.length > 1 ? '' : 'none';
+    nextBtn.style.display = imgs.length > 1 ? '' : 'none';
+  }
+  function onKey(e) {
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') { idx = (idx - 1 + imgs.length) % imgs.length; render(); }
+    else if (e.key === 'ArrowRight') { idx = (idx + 1) % imgs.length; render(); }
+  }
+  function close() { ov.style.display = 'none'; document.removeEventListener('keydown', onKey); }
+  ov.querySelector('#rr-lightbox-close').addEventListener('click', close);
+  prevBtn.addEventListener('click', () => { idx = (idx - 1 + imgs.length) % imgs.length; render(); });
+  nextBtn.addEventListener('click', () => { idx = (idx + 1) % imgs.length; render(); });
+  ov.addEventListener('click', e => { if (e.target === ov) close(); });
+  ov.rrOpen = function(images, startIdx) {
+    imgs = images; idx = startIdx || 0;
+    render();
+    ov.style.display = 'flex';
+    document.addEventListener('keydown', onKey);
+  };
+  document.body.appendChild(ov);
+  return ov;
+}
+
+function openRRLightbox(images, startIdx) {
+  const ov = document.getElementById('rr-lightbox-overlay') || createRRLightbox();
+  ov.rrOpen(images, startIdx);
 }
 
 function esc(str) {
