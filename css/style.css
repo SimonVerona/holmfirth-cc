@@ -126,6 +126,7 @@ img { max-width: 100%; display: block; }
   border: none;
   cursor: pointer;
   padding: 4px;
+  margin-right: max(12px, env(safe-area-inset-right));
 }
 .nav-toggle span {
   display: block;
@@ -1086,7 +1087,7 @@ footer {
   .hero-stats { gap: 28px; flex-wrap: wrap; }
 }
 @media (max-width: 600px) {
-  .nav { padding: 0 20px; }
+  .nav { padding: 0 24px; }
   .section { padding: 64px 20px; }
   .quick-jump-inner { grid-template-columns: 1fr 1fr; }
   .rides-grid { grid-template-columns: 1fr; }
